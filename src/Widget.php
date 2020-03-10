@@ -1,6 +1,6 @@
 <?php
 
-namespace BYanelli\ProjectName;
+namespace BYanelli\SuperFactory;
 
 class Widget
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace BYanelli\ProjectName\Tests;
+namespace BYanelli\SuperFactory\Tests;
 
-use BYanelli\ProjectName\Widget;
+use BYanelli\SuperFactory\Widget;
 use PHPUnit\Framework\TestCase;
 
 class WidgetTest extends TestCase

@@ -1,6 +1,6 @@
 {
-    "name": "vendor/project",
-    "description": "A description of the library",
+    "name": "byanelli/laravel-super-factory",
+    "description": "Enhanced model factory for Laravel",
     "license": "MIT",
     "type": "library",
     "authors": [
@@ -10,20 +10,20 @@
         }
     ],
     "require": {
-        "php": ">=7.2.0"
+        "php": ">=7.3.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7",
+        "phpunit/phpunit": "^8",
         "psy/psysh": "^0.9.9"
     },
     "autoload": {
         "psr-4": {
-            "BYanelli\\ProjectName\\" : "src/"
+            "BYanelli\\SuperFactory\\" : "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "BYanelli\\ProjectName\\Tests\\" : "tests/"
+            "BYanelli\\SuperFactory\\Tests\\" : "tests/"
         }
     },
     "scripts": {
