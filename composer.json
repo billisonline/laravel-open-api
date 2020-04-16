@@ -1,6 +1,6 @@
 {
-    "name": "byanelli/laravel-super-factory",
-    "description": "Enhanced model factory for Laravel",
+    "name": "byanelli/open-api-laravel",
+    "description": "OpenAPI definition generator for Laravel",
     "license": "MIT",
     "type": "library",
     "authors": [
@@ -11,7 +11,8 @@
     ],
     "require": {
         "php": ">=7.3.0",
-        "laravel/framework": "^6|^7"
+        "laravel/framework": "^6|^7",
+        "spatie/data-transfer-object": "^1.13"
     },
     "require-dev": {
         "phpunit/phpunit": "^8",
@@ -20,12 +21,12 @@
     },
     "autoload": {
         "psr-4": {
-            "BYanelli\\SuperFactory\\" : "src/"
+            "BYanelli\\OpenApiLaravel\\" : "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "BYanelli\\SuperFactory\\Tests\\" : "tests/"
+            "BYanelli\\OpenApiLaravel\\Tests\\" : "tests/"
         }
     },
     "scripts": {

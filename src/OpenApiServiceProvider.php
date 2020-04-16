@@ -1,10 +1,10 @@
 <?php
 
-namespace BYanelli\SuperFactory;
+namespace BYanelli\OpenApiLaravel;
 
 use Illuminate\Support\ServiceProvider;
 
-class WidgetServiceProvider extends ServiceProvider
+class OpenApiServiceProvider extends ServiceProvider
 {
     public function register()
     {
