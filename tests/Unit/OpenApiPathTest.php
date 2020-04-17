@@ -5,8 +5,6 @@ namespace BYanelli\OpenApiLaravel\Tests\Unit;
 use BYanelli\OpenApiLaravel\OpenApiOperation;
 use BYanelli\OpenApiLaravel\OpenApiOperationCollection;
 use BYanelli\OpenApiLaravel\OpenApiPath;
-use BYanelli\OpenApiLaravel\OpenApiResponse;
-use BYanelli\OpenApiLaravel\OpenApiResponseCollection;
 use BYanelli\OpenApiLaravel\Tests\TestCase;
 
 class OpenApiPathTest extends TestCase
@@ -28,7 +26,7 @@ class OpenApiPathTest extends TestCase
             'default' => [
                 [
                     'path' => '/posts',
-                    'operations' => new OpenApiOperationCollection([
+                    'operations' => [
                         new OpenApiOperation([
                             'method' => 'get',
                             'description' => 'Get all posts'
@@ -37,7 +35,7 @@ class OpenApiPathTest extends TestCase
                             'method' => 'post',
                             'description' => 'Create post'
                         ]),
-                    ]),
+                    ],
                 ],
                 [
                     'get' => [

@@ -8,6 +8,7 @@ use Spatie\DataTransferObject\DataTransferObject;
  * @mixin DataTransferObject
  * @property array ignoreKeysIfEmpty
  * @property array rootKey
+ * @property array keyArrayBy
  */
 trait DtoSerializationOptions
 {
@@ -17,7 +18,9 @@ trait DtoSerializationOptions
 
         $ignoreIfEmpty = $this->ignoreKeysIfEmpty ?? [];
 
-        $meta = ['ignoreKeysIfEmpty', 'rootKey'];
+        $keyArrayBy = $this->keyArrayBy ?? [];
+
+        $meta = ['ignoreKeysIfEmpty', 'rootKey', 'keyArrayBy'];
 
         foreach (parent::toArray() as $key => $value) {
             if (in_array($key, $meta)) {
@@ -28,6 +31,16 @@ trait DtoSerializationOptions
                 continue;
             }
 
+            if (
+                // Get original value (not serialized from parent::toArray())
+                is_array($arr = ($this->{$key} ?? null))
+                && in_array($key, array_keys($keyArrayBy))
+            ) {
+                $keyArrayByValue = $keyArrayBy[$key];
+
+                $value = $this->keyArrayByDtoValue($keyArrayByValue, $arr);
+            }
+
             $result[$key] = $value;
         }
 
@@ -36,5 +49,17 @@ trait DtoSerializationOptions
         }
 
         return $result;
+    }
+
+    protected function keyArrayByDtoValue(string $keyName, array $arr): array
+    {
+        /** @var DataTransferObject $dto */
+        foreach ($arr as $i => $dto) {
+            $arr[$dto->{$keyName}] = $dto->toArray();
+
+            unset($arr[$i]);
+        }
+
+        return $arr;
     }
 }

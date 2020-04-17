@@ -11,8 +11,12 @@ class OpenApiPath extends DataTransferObject
     /** @var string */
     public $path;
 
-    /** @var \BYanelli\OpenApiLaravel\OpenApiOperationCollection */
-    public $operations;
+    /** @var \BYanelli\OpenApiLaravel\OpenApiOperation[]|array */
+    public $operations = [];
 
     protected $rootKey = 'operations';
+
+    public $keyArrayBy = [
+        'operations' => 'method',
+    ];
 }

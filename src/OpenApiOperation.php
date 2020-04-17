@@ -17,10 +17,14 @@ class OpenApiOperation extends DataTransferObject
     /** @var string */
     public $operationId = '';
 
-    /** @var \BYanelli\OpenApiLaravel\OpenApiResponseCollection|null  */
-    public $responses = null;
+    /** @var \BYanelli\OpenApiLaravel\OpenApiResponse[]|array  */
+    public $responses = [];
 
     protected $exceptKeys = ['method'];
 
     public $ignoreKeysIfEmpty = ['description', 'operationId', 'responses'];
+
+    public $keyArrayBy = [
+        'responses' => 'status',
+    ];
 }
