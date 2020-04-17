@@ -14,6 +14,9 @@ class OpenApiDefinition extends DataTransferObject
     /** @var \BYanelli\OpenApiLaravel\OpenApiPath[]|array */
     public $paths = [];
 
+    /** @var \BYanelli\OpenApiLaravel\OpenApiInfo */
+    public $info;
+
     public $keyArrayBy  = [
         'paths' => 'path',
     ];

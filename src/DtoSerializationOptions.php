@@ -2,10 +2,12 @@
 
 namespace BYanelli\OpenApiLaravel;
 
+use Illuminate\Support\Arr;
 use Spatie\DataTransferObject\DataTransferObject;
 
 /**
  * @mixin DataTransferObject
+ * @property array applyKeys
  * @property array ignoreKeysIfEmpty
  * @property array rootKey
  * @property array keyArrayBy
@@ -16,8 +18,8 @@ trait DtoSerializationOptions
     {
         $result = [];
 
+        $applyKeys = $this->applyKeys ?? [];
         $ignoreIfEmpty = $this->ignoreKeysIfEmpty ?? [];
-
         $keyArrayBy = $this->keyArrayBy ?? [];
 
         $meta = ['ignoreKeysIfEmpty', 'rootKey', 'keyArrayBy'];
@@ -42,6 +44,12 @@ trait DtoSerializationOptions
             }
 
             $result[$key] = $value;
+
+            if (in_array($key, array_keys($applyKeys))) {
+                Arr::set($result, $applyKeys[$key], $value);
+
+                unset($result[$key]);
+            }
         }
 
         if (!empty($rootKey = $this->rootKey ?? null)) {

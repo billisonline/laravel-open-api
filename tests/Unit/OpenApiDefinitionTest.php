@@ -3,6 +3,7 @@
 namespace BYanelli\OpenApiLaravel\Tests\Unit;
 
 use BYanelli\OpenApiLaravel\OpenApiDefinition;
+use BYanelli\OpenApiLaravel\OpenApiInfo;
 use BYanelli\OpenApiLaravel\OpenApiOperation;
 use BYanelli\OpenApiLaravel\OpenApiPath;
 use BYanelli\OpenApiLaravel\Tests\TestCase;
@@ -25,17 +26,21 @@ class OpenApiDefinitionTest extends TestCase
         return [
             'default' => [
                 [
+                    'info' => new OpenApiInfo([
+                        'title'     => 'Test API',
+                        'version'   => '0.1',
+                    ]),
                     'paths' => [
                         new OpenApiPath([
                             'path' => '/posts',
                             'operations' => [
                                 new OpenApiOperation([
-                                    'method' => 'get',
-                                    'description' => 'Get posts'
+                                    'method'        => 'get',
+                                    'description'   => 'Get posts'
                                 ]),
                                 new OpenApiOperation([
-                                    'method' => 'post',
-                                    'description' => 'Create post',
+                                    'method'        => 'post',
+                                    'description'   => 'Create post',
                                 ]),
                             ],
                         ])
@@ -43,6 +48,10 @@ class OpenApiDefinitionTest extends TestCase
                 ],
                 [
                     'openapi' => '3.0.0',
+                    'info' => [
+                        'title'     => 'Test API',
+                        'version'   => '0.1',
+                    ],
                     'paths' => [
                         '/posts' => [
                             'get' => [
