@@ -7,6 +7,7 @@ use Spatie\DataTransferObject\DataTransferObject;
 /**
  * @mixin DataTransferObject
  * @property array ignoreKeysIfEmpty
+ * @property array rootKey
  */
 trait DtoSerializationOptions
 {
@@ -16,7 +17,7 @@ trait DtoSerializationOptions
 
         $ignoreIfEmpty = $this->ignoreKeysIfEmpty ?? [];
 
-        $meta = ['ignoreKeysIfEmpty'];
+        $meta = ['ignoreKeysIfEmpty', 'rootKey'];
 
         foreach (parent::toArray() as $key => $value) {
             if (in_array($key, $meta)) {
@@ -28,6 +29,10 @@ trait DtoSerializationOptions
             }
 
             $result[$key] = $value;
+        }
+
+        if (!empty($rootKey = $this->rootKey ?? null)) {
+            $result = $result[$rootKey];
         }
 
         return $result;
