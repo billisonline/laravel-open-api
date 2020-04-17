@@ -3,6 +3,8 @@
 namespace BYanelli\OpenApiLaravel\Tests\Unit;
 
 use BYanelli\OpenApiLaravel\OpenApiOperation;
+use BYanelli\OpenApiLaravel\OpenApiResponse;
+use BYanelli\OpenApiLaravel\OpenApiResponseCollection;
 use BYanelli\OpenApiLaravel\Tests\TestCase;
 
 class OpenApiOperationTest extends TestCase
@@ -39,6 +41,35 @@ class OpenApiOperationTest extends TestCase
                 [
                     'description' => 'blah blah',
                     'operationId' => 'createSomething',
+                ]
+            ],
+            'with responses' => [
+                [
+                    'method' => 'get',
+                    'description' => 'blah blah',
+                    'operationId' => 'createSomething',
+                    'responses' => new OpenApiResponseCollection([
+                        new OpenApiResponse([
+                            'status' => 200,
+                            'description' => 'ok response',
+                        ]),
+                        new OpenApiResponse([
+                            'status' => 404,
+                            'description' => 'not found response',
+                        ]),
+                    ])
+                ],
+                [
+                    'description' => 'blah blah',
+                    'operationId' => 'createSomething',
+                    'responses' => [
+                        200 => [
+                            'description' => 'ok response',
+                        ],
+                        404 =>[
+                            'description' => 'not found response',
+                        ],
+                    ]
                 ]
             ],
         ];

@@ -8,7 +8,7 @@ use Spatie\DataTransferObject\DataTransferObject;
  * @mixin DataTransferObject
  * @property array ignoreKeysIfEmpty
  */
-trait SerializationOptions
+trait DtoSerializationOptions
 {
     public function toArray(): array
     {

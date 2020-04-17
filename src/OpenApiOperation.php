@@ -6,7 +6,7 @@ use Spatie\DataTransferObject\DataTransferObject;
 
 class OpenApiOperation extends DataTransferObject
 {
-   use SerializationOptions;
+   use DtoSerializationOptions;
 
     /** @var string */
     public $method;
@@ -17,7 +17,10 @@ class OpenApiOperation extends DataTransferObject
     /** @var string */
     public $operationId = '';
 
+    /** @var \BYanelli\OpenApiLaravel\OpenApiResponseCollection|null  */
+    public $responses = null;
+
     protected $exceptKeys = ['method'];
 
-    public $ignoreKeysIfEmpty = ['description', 'operationId'];
+    public $ignoreKeysIfEmpty = ['description', 'operationId', 'responses'];
 }
