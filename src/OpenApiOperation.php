@@ -20,11 +20,34 @@ class OpenApiOperation extends DataTransferObject
     /** @var \BYanelli\OpenApiLaravel\OpenApiResponse[]|array  */
     public $responses = [];
 
+    /** @var \BYanelli\OpenApiLaravel\OpenApiTag[]|array  */
+    public $tags = [];
+
     protected $exceptKeys = ['method'];
 
-    public $ignoreKeysIfEmpty = ['description', 'operationId', 'responses'];
+    public $ignoreKeysIfEmpty = [
+        'description',
+        'operationId',
+        'responses',
+        'tags',
+    ];
 
     public $keyArrayBy = [
         'responses' => 'status',
     ];
+
+    /**
+     * @param OpenApiTag[]|array $tags
+     * @return array
+     */
+    protected function serializeTags(array $tags): array
+    {
+        return [
+            'tags' => (
+                collect($tags)
+                    ->map(function (OpenApiTag $tag) {return $tag->name;})
+                    ->all()
+            )
+        ];
+    }
 }

@@ -32,7 +32,7 @@ class OpenApiDefinitionTest extends TestCase
                         'version'   => '0.1',
                     ]),
                     'tags' => [
-                        new OpenApiTag([
+                        $postsTag = new OpenApiTag([
                             'name' => 'posts',
                             'description' => 'All about posts',
                         ])
@@ -43,11 +43,13 @@ class OpenApiDefinitionTest extends TestCase
                             'operations' => [
                                 new OpenApiOperation([
                                     'method'        => 'get',
-                                    'description'   => 'Get posts'
+                                    'description'   => 'Get posts',
+                                    'tags'          => [$postsTag],
                                 ]),
                                 new OpenApiOperation([
                                     'method'        => 'post',
                                     'description'   => 'Create post',
+                                    'tags'          => [$postsTag],
                                 ]),
                             ],
                         ])
@@ -68,10 +70,12 @@ class OpenApiDefinitionTest extends TestCase
                     'paths' => [
                         '/posts' => [
                             'get' => [
-                                'description' => 'Get posts',
+                                'tags'          => ['posts'],
+                                'description'   => 'Get posts',
                             ],
                             'post' => [
-                                'description' => 'Create post',
+                                'tags'          => ['posts'],
+                                'description'   => 'Create post',
                             ],
                         ]
                     ]

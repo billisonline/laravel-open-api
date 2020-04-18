@@ -3,6 +3,7 @@
 namespace BYanelli\OpenApiLaravel;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Spatie\DataTransferObject\DataTransferObject;
 
 /**
@@ -25,6 +26,8 @@ trait DtoSerializationOptions
         $meta = ['ignoreKeysIfEmpty', 'rootKey', 'keyArrayBy'];
 
         foreach (parent::toArray() as $key => $value) {
+            $originalValue = $this->{$key} ?? null;
+
             if (in_array($key, $meta)) {
                 continue;
             }
@@ -34,13 +37,12 @@ trait DtoSerializationOptions
             }
 
             if (
-                // Get original value (not serialized from parent::toArray())
-                is_array($arr = ($this->{$key} ?? null))
+                is_array($originalValue)
                 && in_array($key, array_keys($keyArrayBy))
             ) {
                 $keyArrayByValue = $keyArrayBy[$key];
 
-                $value = $this->keyArrayByDtoValue($keyArrayByValue, $arr);
+                $value = $this->keyArrayByDtoValue($keyArrayByValue, $originalValue);
             }
 
             $result[$key] = $value;
@@ -49,6 +51,14 @@ trait DtoSerializationOptions
                 Arr::set($result, $applyKeys[$key], $value);
 
                 unset($result[$key]);
+            }
+
+            if (method_exists($this, $customSerializer = 'serialize'.Str::studly($key))) {
+                $customResult = $this->{$customSerializer}($originalValue);
+
+                unset($result[$key]);
+
+                $result = array_merge($result, $customResult);
             }
         }
 
