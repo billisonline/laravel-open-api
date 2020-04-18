@@ -27,4 +27,25 @@ class OpenApiDefinition extends DataTransferObject
     public $ignoreKeysIfEmpty = [
         'tags',
     ];
+
+    public function autoCollectTags()
+    {
+        $collectedTags = [];
+
+        foreach ($this->paths as $path) {
+            foreach ($path->operations as $operation) {
+                foreach ($operation->tags as $tag) {
+                    $collectedTags[] = $tag;
+                }
+            }
+        }
+
+        $this->tags = (
+            collect(array_merge($this->tags, $collectedTags))
+                ->unique(function (OpenApiTag $tag) {return $tag->name;})
+                ->all()
+        );
+
+        return $this;
+    }
 }

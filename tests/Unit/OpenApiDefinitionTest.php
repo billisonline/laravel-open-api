@@ -15,9 +15,13 @@ class OpenApiDefinitionTest extends TestCase
      * @test
      * @dataProvider definitions()
      */
-    public function serialize_definition($params, $result)
+    public function serialize_definition($params, $result, $autoCollectTags)
     {
         $operation = new OpenApiDefinition($params);
+
+        if ($autoCollectTags) {
+            $operation->autoCollectTags();
+        }
 
         $this->assertEquals($result, $operation->toArray());
     }
@@ -37,6 +41,57 @@ class OpenApiDefinitionTest extends TestCase
                             'description' => 'All about posts',
                         ])
                     ],
+                    'paths' => [
+                        new OpenApiPath([
+                            'path' => '/posts',
+                            'operations' => [
+                                new OpenApiOperation([
+                                    'method'        => 'get',
+                                    'description'   => 'Get posts',
+                                    'tags'          => [$postsTag],
+                                ]),
+                                new OpenApiOperation([
+                                    'method'        => 'post',
+                                    'description'   => 'Create post',
+                                    'tags'          => [$postsTag],
+                                ]),
+                            ],
+                        ])
+                    ],
+                ],
+                [
+                    'openapi' => '3.0.0',
+                    'info' => [
+                        'title'     => 'Test API',
+                        'version'   => '0.1',
+                    ],
+                    'tags' => [
+                        [
+                            'name' => 'posts',
+                            'description' => 'All about posts',
+                        ],
+                    ],
+                    'paths' => [
+                        '/posts' => [
+                            'get' => [
+                                'tags'          => ['posts'],
+                                'description'   => 'Get posts',
+                            ],
+                            'post' => [
+                                'tags'          => ['posts'],
+                                'description'   => 'Create post',
+                            ],
+                        ]
+                    ]
+                ],
+                false,
+            ],
+            'with auto collected tags' => [
+                [
+                    'info' => new OpenApiInfo([
+                        'title'     => 'Test API',
+                        'version'   => '0.1',
+                    ]),
                     'paths' => [
                         new OpenApiPath([
                             'path' => '/posts',
@@ -79,8 +134,9 @@ class OpenApiDefinitionTest extends TestCase
                             ],
                         ]
                     ]
-                ]
-            ]
+                ],
+                true,
+            ],
         ];
     }
 
