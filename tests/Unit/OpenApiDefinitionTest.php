@@ -6,6 +6,7 @@ use BYanelli\OpenApiLaravel\OpenApiDefinition;
 use BYanelli\OpenApiLaravel\OpenApiInfo;
 use BYanelli\OpenApiLaravel\OpenApiOperation;
 use BYanelli\OpenApiLaravel\OpenApiPath;
+use BYanelli\OpenApiLaravel\OpenApiTag;
 use BYanelli\OpenApiLaravel\Tests\TestCase;
 
 class OpenApiDefinitionTest extends TestCase
@@ -30,6 +31,12 @@ class OpenApiDefinitionTest extends TestCase
                         'title'     => 'Test API',
                         'version'   => '0.1',
                     ]),
+                    'tags' => [
+                        new OpenApiTag([
+                            'name' => 'posts',
+                            'description' => 'All about posts',
+                        ])
+                    ],
                     'paths' => [
                         new OpenApiPath([
                             'path' => '/posts',
@@ -51,6 +58,12 @@ class OpenApiDefinitionTest extends TestCase
                     'info' => [
                         'title'     => 'Test API',
                         'version'   => '0.1',
+                    ],
+                    'tags' => [
+                        [
+                            'name' => 'posts',
+                            'description' => 'All about posts',
+                        ],
                     ],
                     'paths' => [
                         '/posts' => [

@@ -65,10 +65,12 @@ class OpenApiInfoTest extends TestCase
             ],
             'with external docs' => [
                 [
-                    'title'         => 'Test API',
-                    'version'       => '0.1',
-                    'externalDocsDescription'  => 'Our Docs',
-                    'externalDocsUrl'    => 'http://our.website/docs',
+                    'title'     => 'Test API',
+                    'version'   => '0.1',
+                    'externalDocs'   => [
+                        'description'  => 'Our Docs',
+                        'url'   => 'http://our.website/docs',
+                    ],
                 ],
                 [
                     'title'     => 'Test API',

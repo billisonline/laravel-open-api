@@ -35,11 +35,8 @@ class OpenApiInfo extends DataTransferObject
     /** @var string */
     public $licenseUrl = '';
 
-    /** @var string */
-    public $externalDocsDescription = '';
-
-    /** @var string */
-    public $externalDocsUrl = '';
+    /** @var \BYanelli\OpenApiLaravel\OpenApiExternalDocs|null */
+    public $externalDocs;
 
     protected $applyKeys = [
         'licenseName'               => 'license.name',
@@ -47,8 +44,6 @@ class OpenApiInfo extends DataTransferObject
         'contactName'               => 'contact.name',
         'contactEmail'              => 'contact.email',
         'contactUrl'                => 'contact.url',
-        'externalDocsDescription'   => 'externalDocs.description',
-        'externalDocsUrl'           => 'externalDocs.url',
     ];
 
     public $ignoreKeysIfEmpty = [
@@ -59,7 +54,6 @@ class OpenApiInfo extends DataTransferObject
         'contactUrl',
         'licenseName',
         'licenseUrl',
-        'externalDocsDescription',
-        'externalDocsUrl',
+        'externalDocs',
     ];
 }
