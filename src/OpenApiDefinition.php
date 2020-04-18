@@ -30,18 +30,17 @@ class OpenApiDefinition extends DataTransferObject
 
     public function autoCollectTags()
     {
-        $collectedTags = [];
-
-        foreach ($this->paths as $path) {
-            foreach ($path->operations as $operation) {
-                foreach ($operation->tags as $tag) {
-                    $collectedTags[] = $tag;
-                }
-            }
-        }
-
         $this->tags = (
-            collect(array_merge($this->tags, $collectedTags))
+            collect($this->tags)
+                ->merge(iterator_to_array((function () {
+                    foreach ($this->paths as $path) {
+                        foreach ($path->operations as $operation) {
+                            foreach ($operation->tags as $tag) {
+                                yield $tag;
+                            }
+                        }
+                    }
+                })()))
                 ->unique(function (OpenApiTag $tag) {return $tag->name;})
                 ->all()
         );

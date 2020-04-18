@@ -32,6 +32,16 @@ trait DtoSerializationOptions
                 continue;
             }
 
+            $customValidator = $this->getCustomValidatorName($key);
+
+            if (method_exists($this, $customValidator)) {
+                $validationResult = $this->{$customValidator}($originalValue);
+
+                if (!$validationResult) {
+                    throw new \Exception("Invalid {$key}");
+                }
+            }
+
             if (empty($value) && in_array($key, $ignoreIfEmpty)) {
                 continue;
             }
@@ -53,12 +63,14 @@ trait DtoSerializationOptions
                 unset($result[$key]);
             }
 
-            if (method_exists($this, $customSerializer = 'serialize'.Str::studly($key))) {
-                $customResult = $this->{$customSerializer}($originalValue);
+            $customSerializer = $this->getCustomSerializerName($key);
+
+            if (method_exists($this, $customSerializer)) {
+                $serializationResult = $this->{$customSerializer}($originalValue);
 
                 unset($result[$key]);
 
-                $result = array_merge($result, $customResult);
+                $result = array_merge($result, $serializationResult);
             }
         }
 
@@ -79,5 +91,15 @@ trait DtoSerializationOptions
         }
 
         return $arr;
+    }
+
+    protected function getCustomSerializerName(string $key): string
+    {
+        return 'serialize'.Str::studly($key);
+    }
+
+    protected function getCustomValidatorName(string $key): string
+    {
+        return 'validate'.Str::studly($key);
     }
 }

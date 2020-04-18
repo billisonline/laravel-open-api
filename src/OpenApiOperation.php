@@ -23,6 +23,9 @@ class OpenApiOperation extends DataTransferObject
     /** @var \BYanelli\OpenApiLaravel\OpenApiTag[]|array  */
     public $tags = [];
 
+    /** @var \BYanelli\OpenApiLaravel\OpenApiParameter[]|array  */
+    public $parameters = [];
+
     protected $exceptKeys = ['method'];
 
     public $ignoreKeysIfEmpty = [
@@ -30,6 +33,7 @@ class OpenApiOperation extends DataTransferObject
         'operationId',
         'responses',
         'tags',
+        'parameters',
     ];
 
     public $keyArrayBy = [
