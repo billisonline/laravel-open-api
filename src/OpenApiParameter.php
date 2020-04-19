@@ -20,8 +20,12 @@ class OpenApiParameter extends DataTransferObject
     /** @var bool */
     public $required = false;
 
+    /** @var \BYanelli\OpenApiLaravel\OpenApiSchema|null */
+    public $schema;
+
     public $ignoreKeysIfEmpty = [
         'description',
+        'schema',
     ];
 
     protected function validateIn(string $in)

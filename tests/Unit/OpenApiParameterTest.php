@@ -3,6 +3,7 @@
 namespace BYanelli\OpenApiLaravel\Tests\Unit;
 
 use BYanelli\OpenApiLaravel\OpenApiParameter;
+use BYanelli\OpenApiLaravel\OpenApiSchema;
 use BYanelli\OpenApiLaravel\Tests\TestCase;
 
 class OpenApiParameterTest extends TestCase
@@ -54,6 +55,26 @@ class OpenApiParameterTest extends TestCase
                     'in' => 'path',
                     'required' => true,
                     'description' => 'blah blah',
+                ]
+            ],
+            'with schema' => [
+                [
+                    'name' => 'id',
+                    'in' => 'path',
+                    'required' => true,
+                    'schema' => new OpenApiSchema([
+                        'type' => 'integer',
+                        'minimum' => 1
+                    ]),
+                ],
+                [
+                    'name' => 'id',
+                    'in' => 'path',
+                    'required' => true,
+                    'schema' => [
+                        'type' => 'integer',
+                        'minimum' => 1
+                    ],
                 ]
             ],
         ];

@@ -10,6 +10,7 @@ use Spatie\DataTransferObject\DataTransferObject;
  * @mixin DataTransferObject
  * @property array applyKeys
  * @property array ignoreKeysIfEmpty
+ * @property array ignoreKeysIfNull
  * @property array rootKey
  * @property array keyArrayBy
  */
@@ -21,9 +22,10 @@ trait DtoSerializationOptions
 
         $applyKeys = $this->applyKeys ?? [];
         $ignoreIfEmpty = $this->ignoreKeysIfEmpty ?? [];
+        $ignoreIfNull = $this->ignoreKeysIfNull ?? [];
         $keyArrayBy = $this->keyArrayBy ?? [];
 
-        $meta = ['ignoreKeysIfEmpty', 'rootKey', 'keyArrayBy'];
+        $meta = ['applyKeys', 'ignoreKeysIfEmpty', 'rootKey', 'keyArrayBy'];
 
         foreach (parent::toArray() as $key => $value) {
             $originalValue = $this->{$key} ?? null;
@@ -43,6 +45,10 @@ trait DtoSerializationOptions
             }
 
             if (empty($value) && in_array($key, $ignoreIfEmpty)) {
+                continue;
+            }
+
+            if (is_null($value) && in_array($key, $ignoreIfNull)) {
                 continue;
             }
 

@@ -2,7 +2,9 @@
 
 namespace BYanelli\OpenApiLaravel\Tests\Unit;
 
+use BYanelli\OpenApiLaravel\OpenApiNamedSchema;
 use BYanelli\OpenApiLaravel\OpenApiResponse;
+use BYanelli\OpenApiLaravel\OpenApiSchema;
 use BYanelli\OpenApiLaravel\Tests\TestCase;
 
 class OpenApiResponseTest extends TestCase
@@ -35,7 +37,44 @@ class OpenApiResponseTest extends TestCase
                 [
                     'description' => 'OK',
                 ]
-            ]
+            ],
+            'with schema' => [
+                [
+                    'status' => 200,
+                    'description' => 'OK',
+                    'jsonSchema' => new OpenApiSchema([
+                        'type' => 'object',
+                        'properties' => [
+                            new OpenApiNamedSchema([
+                                'name' => 'id',
+                                'type' => 'integer',
+                            ]),
+                            new OpenApiNamedSchema([
+                                'name' => 'title',
+                                'type' => 'string',
+                            ]),
+                        ]
+                    ])
+                ],
+                [
+                    'description' => 'OK',
+                    'content' => [
+                        'application/json' => [
+                            'schema' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'id' => [
+                                        'type' => 'integer'
+                                    ],
+                                    'title' => [
+                                        'type' => 'string'
+                                    ],
+                                ],
+                            ]
+                        ]
+                    ]
+                ]
+            ],
         ];
     }
 
