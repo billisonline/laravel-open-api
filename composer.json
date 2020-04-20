@@ -26,7 +26,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "BYanelli\\OpenApiLaravel\\Tests\\" : "tests/"
+            "BYanelli\\OpenApiLaravel\\Tests\\" : "tests/",
+            "TestApp\\" : "tests/TestApp/app/"
         }
     },
     "scripts": {
