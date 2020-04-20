@@ -38,6 +38,7 @@ class PathBuilderTest extends TestCase
                             'name' => 'post',
                             'in' => 'path',
                             'required' => false, //todo
+                            'description' => 'Id of the Post to show'
                         ]
                     ]
                 ]

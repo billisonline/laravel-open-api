@@ -2,8 +2,6 @@
 
 namespace BYanelli\OpenApiLaravel\Builders;
 
-use BYanelli\OpenApiLaravel\OpenApiOperation;
-use BYanelli\OpenApiLaravel\OpenApiParameter;
 use BYanelli\OpenApiLaravel\OpenApiPath;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Traits\Tappable;
@@ -47,8 +45,7 @@ class OpenApiPathBuilder
                     foreach ($route->parameterNames() as $parameterName) {
                         $operation->addParameter(
                             OpenApiParameterBuilder::make()
-                                ->name($parameterName)
-                                ->inPath()
+                                ->fromRouteParameter($route, $parameterName)
                         );
                     }
                 })
