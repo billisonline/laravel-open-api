@@ -26,4 +26,26 @@ class PathBuilderTest extends TestCase
                 ->toArray()
         );
     }
+
+    /** @test */
+    public function build_path_with_parameters()
+    {
+        $this->assertEquals(
+            [
+                'get' => [
+                    'parameters' => [
+                        [
+                            'name' => 'post',
+                            'in' => 'path',
+                            'required' => false, //todo
+                        ]
+                    ]
+                ]
+            ],
+            OpenApiPathBuilder::make()
+                ->fromAction([PostController::class, 'show'])
+                ->build()
+                ->toArray()
+        );
+    }
 }

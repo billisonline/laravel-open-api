@@ -3,6 +3,7 @@
 namespace BYanelli\OpenApiLaravel\Builders;
 
 use BYanelli\OpenApiLaravel\OpenApiOperation;
+use BYanelli\OpenApiLaravel\OpenApiParameter;
 use Illuminate\Support\Traits\Tappable;
 
 class OpenApiOperationBuilder
@@ -18,6 +19,11 @@ class OpenApiOperationBuilder
      * @var string|null
      */
     private $description = null;
+
+    /**
+     * @var OpenApiParameter[]|array
+     */
+    private $parameters = [];
 
     public function method(string $method): self
     {
@@ -37,7 +43,15 @@ class OpenApiOperationBuilder
     {
         return new OpenApiOperation([
             'method' => $this->method,
-            'description' => $this->description
+            'description' => $this->description,
+            'parameters' => collect($this->parameters)->map->build()->all(),
         ]);
+    }
+
+    public function addParameter(OpenApiParameterBuilder $parameter)
+    {
+        $this->parameters[] = $parameter;
+
+        return $this;
     }
 }
