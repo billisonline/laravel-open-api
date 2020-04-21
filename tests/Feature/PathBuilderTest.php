@@ -15,7 +15,8 @@ class PathBuilderTest extends TestCase
         $this->assertEquals(
             [
                 'get' => [
-                    'description' => 'test'
+                    'operationId' => 'indexPosts',
+                    'description' => 'test',
                 ]
             ],
             OpenApiPathBuilder::make()
@@ -33,6 +34,7 @@ class PathBuilderTest extends TestCase
         $this->assertEquals(
             [
                 'get' => [
+                    'operationId' => 'showPost',
                     'parameters' => [
                         [
                             'name' => 'post',

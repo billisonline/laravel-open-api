@@ -4,7 +4,6 @@ namespace BYanelli\OpenApiLaravel\Builders;
 
 use BYanelli\OpenApiLaravel\OpenApiPath;
 use BYanelli\OpenApiLaravel\Support\Action;
-use Illuminate\Routing\Route;
 use Illuminate\Support\Traits\Tappable;
 
 class OpenApiPathBuilder
@@ -35,25 +34,14 @@ class OpenApiPathBuilder
 
     public function fromAction(Action $action, ?callable $tapOperation=null): self
     {
-        $this->path($action->uri());
-
-        $operation = (
-            OpenApiOperationBuilder::make()
-                ->method($action->httpMethod())
-                ->tap(function (OpenApiOperationBuilder $operation) use ($action) {
-                    foreach ($action->pathParameters() as $parameter) {
-                        $operation->addParameter(
-                            OpenApiParameterBuilder::make()->fromPathParameter($parameter)
-                        );
-                    }
-                })
+        return (
+            $this->path($action->uri())
+                ->addOperation(
+                    OpenApiOperationBuilder::make()
+                        ->fromAction($action)
+                        ->tap($tapOperation ?: function () {})
+                )
         );
-
-        $this->addOperation($operation);
-
-        if ($tapOperation) {$operation->tap($tapOperation);}
-
-        return $this;
     }
 
     public function path(string $path): self

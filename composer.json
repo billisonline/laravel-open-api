@@ -12,7 +12,8 @@
     "require": {
         "php": ">=7.3.0",
         "laravel/framework": "^6|^7",
-        "spatie/data-transfer-object": "^1.13"
+        "spatie/data-transfer-object": "^1.13",
+        "spatie/regex": "^1.4"
     },
     "require-dev": {
         "phpunit/phpunit": "^8",

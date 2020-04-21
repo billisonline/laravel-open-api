@@ -3,6 +3,7 @@
 namespace BYanelli\OpenApiLaravel\Support;
 
 use Illuminate\Routing\Route as IlluminateRoute;
+use Spatie\Regex\Regex;
 
 class Action
 {
@@ -58,5 +59,12 @@ class Action
     public function actionMethod(): string
     {
         return $this->route->getActionMethod();
+    }
+
+    public function objectName()
+    {
+        $controllerName = class_basename($this->controller());
+
+        return Regex::match('/^([A-Za-z]+)Controller$/', $controllerName)->groupOr(1, $controllerName);
     }
 }
