@@ -20,6 +20,13 @@ class OpenApiPathBuilder
      */
     private $operations;
 
+    public function __construct()
+    {
+        if ($currentDef = OpenApiDefinitionBuilder::getCurrent()) {
+            $currentDef->addPath($this);
+        }
+    }
+
     /**
      * @param callable|array|string $action
      * @param callable|null $tapOperation
@@ -46,6 +53,14 @@ class OpenApiPathBuilder
 
     public function path(string $path): self
     {
+        if ($currentDef = OpenApiDefinitionBuilder::getCurrent()) {
+            if ($existing = $currentDef->findPath($path)) {
+                $currentDef->forgetPath($this); //todo this isn't great
+
+                return $existing;
+            }
+        }
+
         $this->path = $path;
 
         return $this;
@@ -64,5 +79,10 @@ class OpenApiPathBuilder
         $this->operations[] = $operation;
 
         return $this;
+    }
+
+    public function getPath()
+    {
+        return $this->path; //todo all setters should be "withX"
     }
 }

@@ -12,8 +12,23 @@ class PostController extends Controller
         return Post::all();
     }
 
+    public function store()
+    {
+        //
+    }
+
     public function show(Post $post)
     {
         return $post;
+    }
+
+    public function update()
+    {
+        //
+    }
+
+    public function destroy()
+    {
+        //
     }
 }

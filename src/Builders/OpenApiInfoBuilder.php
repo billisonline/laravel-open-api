@@ -19,6 +19,13 @@ class OpenApiInfoBuilder
      */
     private $version;
 
+    public function __construct()
+    {
+        if ($currentDef = OpenApiDefinitionBuilder::getCurrent()) {
+            $currentDef->info($this);
+        }
+    }
+
     public function title(string $title): self
     {
         $this->title = $title;
