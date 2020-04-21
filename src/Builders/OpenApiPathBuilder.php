@@ -3,6 +3,7 @@
 namespace BYanelli\OpenApiLaravel\Builders;
 
 use BYanelli\OpenApiLaravel\OpenApiPath;
+use BYanelli\OpenApiLaravel\Support\Action;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Traits\Tappable;
 
@@ -25,27 +26,24 @@ class OpenApiPathBuilder
      * @param callable|null $tapOperation
      * @return $this
      */
-    public function fromAction($action, ?callable $tapOperation=null): self
+    public function fromActionName($action, ?callable $tapOperation=null): self
     {
-        if (is_array($action)) {$action = implode('@', $action);}
+        $action = Action::fromName($action);
 
-        $route = app('router')->getRouteByAction($action);
-
-        return $this->fromRoute($route, $tapOperation);
+        return (new static)->fromAction($action, $tapOperation);
     }
 
-    public function fromRoute(Route $route, ?callable $tapOperation=null): self
+    public function fromAction(Action $action, ?callable $tapOperation=null): self
     {
-        $this->path($route->uri);
+        $this->path($action->uri());
 
         $operation = (
             OpenApiOperationBuilder::make()
-                ->method($this->getRouteNonHeadMethod($route))
-                ->tap(function (OpenApiOperationBuilder $operation) use ($route) {
-                    foreach ($route->parameterNames() as $parameterName) {
+                ->method($action->httpMethod())
+                ->tap(function (OpenApiOperationBuilder $operation) use ($action) {
+                    foreach ($action->pathParameters() as $parameter) {
                         $operation->addParameter(
-                            OpenApiParameterBuilder::make()
-                                ->fromRouteParameter($route, $parameterName)
+                            OpenApiParameterBuilder::make()->fromPathParameter($parameter)
                         );
                     }
                 })
@@ -71,15 +69,6 @@ class OpenApiPathBuilder
             'path' => $this->path,
             'operations' => collect($this->operations)->map->build()->all()
         ]);
-    }
-
-    private function getRouteNonHeadMethod(Route $route): string
-    {
-        return strtolower(
-            collect($route->methods)
-                ->filter(function (string $method) {return $method != 'HEAD';})
-                ->first()
-        );
     }
 
     public function addOperation(OpenApiOperationBuilder $operation): self

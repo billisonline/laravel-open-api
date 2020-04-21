@@ -3,8 +3,9 @@
 namespace BYanelli\OpenApiLaravel\Builders;
 
 use BYanelli\OpenApiLaravel\OpenApiParameter;
+use BYanelli\OpenApiLaravel\Support\Action;
+use BYanelli\OpenApiLaravel\Support\PathParameter;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Routing\Route;
 use Illuminate\Support\Traits\Tappable;
 
 class OpenApiParameterBuilder
@@ -14,12 +15,13 @@ class OpenApiParameterBuilder
     /**
      * @var string
      */
-
     private $name;
+
     /**
      * @var string
      */
     private $in;
+
     /**
      * @var string
      */
@@ -48,53 +50,26 @@ class OpenApiParameterBuilder
         ]);
     }
 
-    public function fromRouteParameter(Route $route, string $parameterName): self
+    public function fromPathParameter(PathParameter $parameter): self
     {
-        $this->name($parameterName)->inPath();
+        $this->name($parameter->name());
 
-        if (!is_null($model = $this->getBoundModel($route, $parameterName))) {
-            $this->zzz($model, $route);
+        $this->inPath();
+
+        if (!is_null($model = $parameter->boundModel())) {
+            $this->description($this->getDescriptionFromModel($model, $parameter->action()));
         }
 
         return $this;
     }
 
-    private function getBoundModel(Route $route, string $parameterName): ?Model
-    {
-        $controller = $route->getController();
-
-        $method = new \ReflectionMethod($controller, $route->getActionMethod());
-
-        /** @var \ReflectionParameter|null $boundModelParameter */
-        $boundModelParameter = (
-            collect($method->getParameters())
-                ->filter(function (\ReflectionParameter $param) use ($parameterName): bool {
-                    return (
-                        ($param->getName() == $parameterName)
-                        && $param->hasType()
-                        && ($param->getType() instanceof \ReflectionNamedType)
-                        && is_subclass_of($param->getType()->getName(), Model::class)
-                    );
-                })
-                ->first()
-        );
-
-        if (is_null($boundModelParameter)) {
-            return null;
-        }
-
-        $modelClass = $boundModelParameter->getType()->getName();
-
-        return new $modelClass;
-    }
-
-    private function zzz(Model $model, Route $route)
+    private function getDescriptionFromModel(Model $model, Action $action): string
     {
         $uppercaseKey = ucfirst($model->getKeyName());
 
         $modelName = class_basename($model);
 
-        $this->description("{$uppercaseKey} of the {$modelName} to {$route->getActionMethod()}");
+        return "{$uppercaseKey} of the {$modelName} to {$action->actionMethod()}";
     }
 
     public function description(string $string)
