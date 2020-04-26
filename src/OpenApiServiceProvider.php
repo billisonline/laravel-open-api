@@ -2,6 +2,7 @@
 
 namespace BYanelli\OpenApiLaravel;
 
+use BYanelli\OpenApiLaravel\Console\Generate;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 
@@ -14,5 +15,11 @@ class OpenApiServiceProvider extends ServiceProvider
         Router::macro('getRouteByAction', function ($a) {
             return $this->routes->getByAction($a);
         });
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                Generate::class,
+            ]);
+        }
     }
 }

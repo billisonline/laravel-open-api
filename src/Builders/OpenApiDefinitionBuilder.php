@@ -63,7 +63,7 @@ class OpenApiDefinitionBuilder
         $this->paths = (
             collect($this->paths)
                 ->filter(function (OpenApiPathBuilder $path) use ($pathToForget) {
-                    return $path !== $pathToForget;
+                    return $path->getPath() !== $pathToForget->getPath();
                 })
                 ->all()
         );

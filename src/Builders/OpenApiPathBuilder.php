@@ -4,6 +4,7 @@ namespace BYanelli\OpenApiLaravel\Builders;
 
 use BYanelli\OpenApiLaravel\OpenApiPath;
 use BYanelli\OpenApiLaravel\Support\Action;
+use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Tappable;
 
 class OpenApiPathBuilder
@@ -53,6 +54,10 @@ class OpenApiPathBuilder
 
     public function path(string $path): self
     {
+        if (!Str::startsWith($path, '/')) {
+            $path = "/{$path}";
+        }
+
         if ($currentDef = OpenApiDefinitionBuilder::getCurrent()) {
             if ($existing = $currentDef->findPath($path)) {
                 $currentDef->forgetPath($this); //todo this isn't great
