@@ -3,7 +3,7 @@
 namespace BYanelli\OpenApiLaravel\Support;
 
 use Illuminate\Database\Eloquent\Model as EloquentModel;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class Model
 {
@@ -17,14 +17,8 @@ class Model
         $this->model = $model;
     }
 
-    public function getAttributeType(string $name)
+    public function getColumnType(string $name)
     {
-        // if has get$nameAttribute method, reflect return type
-
-        // if has $name method and it returns a relation:
-        // - reflect model -> resource type
-        // - determine whether resource is singular or plural
-
         return (
             $this->model
                 ->getConnection()
@@ -41,5 +35,19 @@ class Model
                 ->getSchemaBuilder()
                 ->hasColumn($this->model->getTable(), $name)
         );
+    }
+
+    public function hasGetMutator(string $name)
+    {
+        return $this->model->hasGetMutator($name);
+    }
+
+    public function getGetMutatorType(string $name)
+    {
+        $methodName = 'get'.Str::studly($name).'Attribute';
+
+        $method = new \ReflectionMethod($this->model, $methodName);
+
+        return $method->getReturnType()->getName();
     }
 }

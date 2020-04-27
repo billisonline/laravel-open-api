@@ -22,12 +22,16 @@ class ResourceTest extends TestCase
     /** @test */
     public function get_property_names()
     {
-        $this->assertEquals(['id', 'conditional'], $this->resource->propertyNames());
+        $this->assertEquals(
+            ['id', 'conditional', 'headlineSlug'],
+            $this->resource->propertyNames()
+        );
     }
 
     /** @test */
-    public function get_property_attribute_type()
+    public function get_property_types()
     {
         $this->assertEquals('integer', $this->resource->propertyType('id'));
+        $this->assertEquals('string', $this->resource->propertyType('headlineSlug'));
     }
 }

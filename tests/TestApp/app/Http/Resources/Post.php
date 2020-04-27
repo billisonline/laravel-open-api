@@ -10,7 +10,8 @@ class Post extends JsonResource
     {
         return [
             'id' => $this->id,
-            'conditional' => $this->when(false, function () {return $this->secret;})
+            'conditional' => $this->when(false, function () {return $this->secret;}),
+            'headlineSlug' => $this->headline_slug,
         ];
     }
 }

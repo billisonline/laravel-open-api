@@ -18,8 +18,14 @@ class ModelTest extends TestCase
     }
 
     /** @test */
-    public function get_attribute_type()
+    public function get_column_type()
     {
-        $this->assertEquals('integer', $this->model->getAttributeType('id'));
+        $this->assertEquals('integer', $this->model->getColumnType('id'));
+    }
+
+    /** @test */
+    public function get_dynamic_property_type()
+    {
+        $this->assertEquals('string', $this->model->getGetMutatorType('headline_slug'));
     }
 }

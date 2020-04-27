@@ -54,8 +54,16 @@ class Resource
         $property = $this->properties[$name];
 
         if ($this->model->hasColumn($property)) {
-            return $this->model->getAttributeType($property);
+            return $this->model->getColumnType($property);
         }
+
+        if ($this->model->hasGetMutator($property)) {
+            return $this->model->getGetMutatorType($property);
+        }
+
+        // if has $name method and it returns a relation:
+        // - reflect model -> resource type
+        // - determine whether resource is singular or plural
 
         throw new \Exception;
     }
