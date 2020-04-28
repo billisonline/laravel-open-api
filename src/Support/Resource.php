@@ -41,7 +41,16 @@ class Resource
         /** @noinspection ALL */
         $instance = eval('return new class ($spy) extends '.$className.' { use \BYanelli\OpenApiLaravel\Support\AlwaysEvaluatesConditionalProperties; };');
 
-        return $instance->toArray(Request::createFromGlobals());
+        $properties = $instance->toArray(Request::createFromGlobals());
+
+        // Convert objects to their class names
+        foreach ($properties as $key => $property) {
+            if (is_object($property)) {
+                $properties[$key] = get_class($property);
+            }
+        }
+
+        return $properties;
     }
 
     public function propertyNames()
@@ -52,6 +61,10 @@ class Resource
     public function propertyType(string $name)
     {
         $property = $this->properties[$name];
+
+        if (class_exists($property) && is_subclass_of($property, JsonResource::class)) {
+            return $property;
+        }
 
         if ($this->model->hasColumn($property)) {
             return $this->model->getColumnType($property);

@@ -6,6 +6,7 @@ use BYanelli\OpenApiLaravel\Support\Model;
 use BYanelli\OpenApiLaravel\Support\Resource;
 use BYanelli\OpenApiLaravel\Tests\TestCase;
 use TestApp\Http\Resources\Post as PostResource;
+use TestApp\Http\Resources\User;
 use TestApp\Post as PostModel;
 
 class ResourceTest extends TestCase
@@ -23,7 +24,7 @@ class ResourceTest extends TestCase
     public function get_property_names()
     {
         $this->assertEquals(
-            ['id', 'conditional', 'headlineSlug'],
+            ['id', 'conditional', 'headlineSlug', 'author'],
             $this->resource->propertyNames()
         );
     }
@@ -33,5 +34,6 @@ class ResourceTest extends TestCase
     {
         $this->assertEquals('integer', $this->resource->propertyType('id'));
         $this->assertEquals('string', $this->resource->propertyType('headlineSlug'));
+        $this->assertEquals(User::class, $this->resource->propertyType('author'));
     }
 }

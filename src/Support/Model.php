@@ -3,6 +3,7 @@
 namespace BYanelli\OpenApiLaravel\Support;
 
 use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Str;
 
 class Model

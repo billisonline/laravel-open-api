@@ -12,6 +12,7 @@ class Post extends JsonResource
             'id' => $this->id,
             'conditional' => $this->when(false, function () {return $this->secret;}),
             'headlineSlug' => $this->headline_slug,
+            'author' => new User($this->author),
         ];
     }
 }
