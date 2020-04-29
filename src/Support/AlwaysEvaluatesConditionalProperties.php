@@ -21,6 +21,12 @@ trait AlwaysEvaluatesConditionalProperties
      */
     protected function when($condition, $value, $default = null)
     {
-        return value($value);
+        $evaluated = value($value);
+
+        if ($evaluated instanceof JsonResourcePropertySpy) {
+            $evaluated->setIsConditional(true);
+        }
+
+        return $evaluated;
     }
 }

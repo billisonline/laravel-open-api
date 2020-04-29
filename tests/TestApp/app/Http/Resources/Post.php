@@ -10,7 +10,7 @@ class Post extends JsonResource
     {
         return [
             'id' => $this->id,
-            'conditional' => $this->when(false, function () {return $this->secret;}),
+            'body' => $this->when(false, function () {return $this->body;}),
             'headlineSlug' => $this->headline_slug,
             'author' => new User($this->author),
         ];

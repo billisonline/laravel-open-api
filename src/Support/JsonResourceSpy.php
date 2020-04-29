@@ -4,10 +4,10 @@
 namespace BYanelli\OpenApiLaravel\Support;
 
 
-class ResourceSpy
+class JsonResourceSpy
 {
     public function __get($name)
     {
-        return $name;
+        return new JsonResourcePropertySpy($name);
     }
 }
