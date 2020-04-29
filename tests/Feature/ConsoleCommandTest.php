@@ -24,6 +24,42 @@ class ConsoleCommandTest extends TestCase
                                 'operationId' => 'storePost',
                             ],
                         ],
+                        '/api/posts/{post}' => [
+                            'get' => [
+                                'operationId' => 'showPost',
+                                'responses' => [
+                                    '200' => [
+                                        'content' => [
+                                            'application/json' => [
+                                                'schema' => [
+                                                    'type' => 'object',
+                                                    'properties' => [
+                                                        'id' => [
+                                                            'type' => 'integer',
+                                                        ],
+                                                        'body' => [
+                                                            'type' => 'string',
+                                                            'nullable' => true,
+                                                        ],
+                                                        'headlineSlug' => [
+                                                            'type' => 'string',
+                                                        ],
+                                                    ],
+                                                ]
+                                            ]
+                                        ]
+                                    ]
+                                ],
+                                'parameters' => [
+                                    [
+                                        'name' => 'post',
+                                        'in' => 'path',
+                                        'description' => 'Id of the Post to show',
+                                        'required' => false,
+                                    ]
+                                ]
+                            ]
+                        ]
                     ],
                     'info' =>  [
                         'title' => 'test',

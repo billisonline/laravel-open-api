@@ -4,6 +4,7 @@ namespace BYanelli\OpenApiLaravel\Builders;
 
 use BYanelli\OpenApiLaravel\OpenApiOperation;
 use BYanelli\OpenApiLaravel\OpenApiParameter;
+use BYanelli\OpenApiLaravel\OpenApiResponse;
 use BYanelli\OpenApiLaravel\Support\Action;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Tappable;
@@ -26,6 +27,11 @@ class OpenApiOperationBuilder
      * @var OpenApiParameter[]|array
      */
     private $parameters = [];
+
+    /**
+     * @var OpenApiResponse[]|array
+     */
+    private $responses = [];
 
     /**
      * @var string
@@ -53,12 +59,20 @@ class OpenApiOperationBuilder
             'operationId' => $this->operationId,
             'description' => $this->description,
             'parameters' => collect($this->parameters)->map->build()->all(),
+            'responses' => collect($this->responses)->map->build()->all(),
         ]);
     }
 
     public function addParameter(OpenApiParameterBuilder $parameter)
     {
         $this->parameters[] = $parameter;
+
+        return $this;
+    }
+
+    public function addResponse(OpenApiResponseBuilder $response): self
+    {
+        $this->responses[] = $response;
 
         return $this;
     }
