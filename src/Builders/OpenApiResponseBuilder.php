@@ -27,7 +27,16 @@ class OpenApiResponseBuilder
 
         $wrappedResource = new JsonResource($resource, new Model(new $model)); //todo: wrap here or pass class names to schema builder?
 
-        return $this->jsonSchema(OpenApiSchemaBuilder::make()->fromResource($wrappedResource));
+        $resourceSchema = OpenApiSchemaBuilder::make()->fromResource($wrappedResource);
+
+        // If we're in a definition context, register the resource as a schema and use the "ref" in this response
+        if ($definition = OpenApiDefinitionBuilder::getCurrent()) {
+            $definition->registerResourceSchema($wrappedResource, $resourceSchema);
+
+            return $this->jsonSchema($definition->getSchemaRefForResource($wrappedResource));
+        }
+
+        return $this->jsonSchema($resourceSchema);
     }
 
     public function status(int $status): self

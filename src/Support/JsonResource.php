@@ -10,7 +10,7 @@ class JsonResource
     /**
      * @var string
      */
-    private $className;
+    private $resourceClass;
 
     /**
      * @var Model
@@ -22,15 +22,15 @@ class JsonResource
      */
     protected $spiedProperties;
 
-    public function __construct(string $className, Model $model)
+    public function __construct(string $resourceClass, Model $model)
     {
-        if (!is_subclass_of($className, BaseJsonResource::class)) {
+        if (!is_subclass_of($resourceClass, BaseJsonResource::class)) {
             throw new \Exception;
         }
 
-        $this->className = $className;
+        $this->resourceClass = $resourceClass;
         $this->model = $model;
-        $this->spiedProperties = $this->spyOnProperties($className);
+        $this->spiedProperties = $this->spyOnProperties($resourceClass);
     }
 
     protected function spyOnProperties(string $className)
@@ -106,5 +106,13 @@ class JsonResource
         }
 
         return $type;
+    }
+
+    /**
+     * @return string
+     */
+    public function resourceClass(): string
+    {
+        return $this->resourceClass;
     }
 }

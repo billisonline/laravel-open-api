@@ -3,6 +3,7 @@
 namespace BYanelli\OpenApiLaravel\Builders;
 
 use BYanelli\OpenApiLaravel\OpenApiDefinition;
+use BYanelli\OpenApiLaravel\Support\JsonResource;
 use Illuminate\Support\Traits\Tappable;
 
 class OpenApiDefinitionBuilder
@@ -23,6 +24,11 @@ class OpenApiDefinitionBuilder
      * @var OpenApiInfoBuilder
      */
     private $info;
+
+    /**
+     * @var OpenApiSchemaBuilder[]|array
+     */
+    private $resourceSchemas;
 
     public static function with(callable $callback): self
     {
@@ -45,6 +51,29 @@ class OpenApiDefinitionBuilder
         $this->paths[] = $path;
 
         return $this;
+    }
+
+    public function registerResourceSchema(JsonResource $resource, OpenApiSchemaBuilder $schema): void
+    {
+        $resourceClass = $resource->resourceClass();
+
+        $schema->name(class_basename($resourceClass));
+
+        if (!isset($this->resourceSchemas[$resourceClass])) {
+            $this->resourceSchemas[$resourceClass] = $schema;
+        }
+    }
+
+    private function getRefPathForResource(JsonResource $resource): string
+    {
+        $name = class_basename($resource->resourceClass());
+
+        return "#/components/schemas/resources/{$name}";
+    }
+
+    public function getSchemaRefForResource(JsonResource $resource): OpenApiSchemaBuilder
+    {
+        return OpenApiSchemaBuilder::make()->ref($this->getRefPathForResource($resource));
     }
 
     public function findPath(string $pathToFind): ?OpenApiPathBuilder
@@ -79,6 +108,7 @@ class OpenApiDefinitionBuilder
     public function build()
     {
         return new OpenApiDefinition([
+            'resourceSchemas' => collect($this->resourceSchemas)->map->build()->all(),
             'paths' => (
                 collect($this->paths)
                     ->map(function (OpenApiPathBuilder $path) {

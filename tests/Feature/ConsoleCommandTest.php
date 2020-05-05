@@ -32,19 +32,7 @@ class ConsoleCommandTest extends TestCase
                                         'content' => [
                                             'application/json' => [
                                                 'schema' => [
-                                                    'type' => 'object',
-                                                    'properties' => [
-                                                        'id' => [
-                                                            'type' => 'integer',
-                                                        ],
-                                                        'body' => [
-                                                            'type' => 'string',
-                                                            'nullable' => true,
-                                                        ],
-                                                        'headlineSlug' => [
-                                                            'type' => 'string',
-                                                        ],
-                                                    ],
+                                                    '$ref' => '#/components/schemas/resources/Post'
                                                 ]
                                             ]
                                         ]
@@ -65,6 +53,27 @@ class ConsoleCommandTest extends TestCase
                         'title' => 'test',
                         'version' => '1.0',
                     ],
+                    'components' => [
+                        'schemas' => [
+                            'resources' => [
+                                'Post' => [
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'id' => [
+                                            'type' => 'integer',
+                                        ],
+                                        'body' => [
+                                            'type' => 'string',
+                                            'nullable' => true,
+                                        ],
+                                        'headlineSlug' => [
+                                            'type' => 'string',
+                                        ],
+                                    ],
+                                ]
+                            ]
+                        ]
+                    ]
                 ],
                 $output
             );

@@ -20,6 +20,9 @@ class OpenApiDefinition extends DataTransferObject
     /** @var \BYanelli\OpenApiLaravel\OpenApiTag[]|array */
     public $tags = [];
 
+    /** @var \BYanelli\OpenApiLaravel\OpenApiSchema[]|array */
+    public $resourceSchemas = [];
+
     public $keyArrayBy  = [
         'paths' => 'path',
     ];
@@ -47,4 +50,17 @@ class OpenApiDefinition extends DataTransferObject
 
         return $this;
     }
+
+    public function serializeResourceSchemas(array $resourceSchemas)
+    {
+        if (empty($resourceSchemas)) {return [];}
+
+        return ['components' => ['schemas' => ['resources' =>
+            collect($resourceSchemas)
+                ->keyBy(function (OpenApiNamedSchema $schema) {return $schema->name;})
+                ->map(function (OpenApiNamedSchema $schema) {return $schema->toArray();})
+                ->all()
+        ]]];
+    }
+
 }

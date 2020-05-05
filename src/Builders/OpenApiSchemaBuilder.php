@@ -4,6 +4,7 @@ namespace BYanelli\OpenApiLaravel\Builders;
 
 use BYanelli\OpenApiLaravel\OpenApiNamedSchema;
 use BYanelli\OpenApiLaravel\OpenApiSchema;
+use BYanelli\OpenApiLaravel\OpenApiSchemaRef;
 use BYanelli\OpenApiLaravel\Support\JsonResource;
 use BYanelli\OpenApiLaravel\Support\Model;
 use Illuminate\Support\Traits\Tappable;
@@ -31,6 +32,11 @@ class OpenApiSchemaBuilder
      * @var string
      */
     private $name = '';
+
+    /**
+     * @var string
+     */
+    private $ref = '';
 
     public function fromResource(JsonResource $resource): self
     {
@@ -78,8 +84,19 @@ class OpenApiSchemaBuilder
         return $this;
     }
 
+    public function ref(string $ref): self
+    {
+        $this->ref = $ref;
+
+        return $this;
+    }
+
     public function build()
     {
+        if (!empty($this->ref)) {
+            return new OpenApiSchemaRef(['ref' => $this->ref]);
+        }
+
         $type = empty($this->name) ? OpenApiSchema::class : OpenApiNamedSchema::class;
 
         $params = [
