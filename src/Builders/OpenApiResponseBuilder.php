@@ -21,22 +21,33 @@ class OpenApiResponseBuilder
      */
     private $jsonSchema;
 
-    public function fromResource(string $resource, string $model): self
+    /**
+     * @param JsonResource|string $resource
+     * @return $this
+     * @throws \Exception
+     */
+    public function fromResource($resource): self
     {
         $this->status(200);
 
-        $wrappedResource = new JsonResource($resource, new Model(new $model)); //todo: wrap here or pass class names to schema builder?
+        if (is_string($resource)) {
+            $resource = new JsonResource($resource);
+        }
 
-        $resourceSchema = OpenApiSchemaBuilder::make()->fromResource($wrappedResource);
+        if (!($resource instanceof JsonResource)) {
+            throw new \Exception;
+        }
+
+        $schema = OpenApiSchemaBuilder::make()->fromResource($resource);
 
         // If we're in a definition context, register the resource as a schema and use the "ref" in this response
         if ($definition = OpenApiDefinitionBuilder::getCurrent()) {
-            $definition->registerResourceSchema($wrappedResource, $resourceSchema);
+            $definition->registerResourceSchema($resource, $schema);
 
-            return $this->jsonSchema($definition->getSchemaRefForResource($wrappedResource));
+            return $this->jsonSchema($definition->getSchemaRefForResource($resource));
         }
 
-        return $this->jsonSchema($resourceSchema);
+        return $this->jsonSchema($schema);
     }
 
     public function status(int $status): self

@@ -4,6 +4,7 @@ namespace BYanelli\OpenApiLaravel\Support;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource as BaseJsonResource;
+use Spatie\Regex\Regex;
 
 class JsonResource
 {
@@ -22,15 +23,32 @@ class JsonResource
      */
     protected $spiedProperties;
 
-    public function __construct(string $resourceClass, Model $model)
+    public function __construct(string $resourceClass, ?Model $model=null)
     {
         if (!is_subclass_of($resourceClass, BaseJsonResource::class)) {
             throw new \Exception;
         }
 
         $this->resourceClass = $resourceClass;
-        $this->model = $model;
+        $this->model = $model ?: $this->guessModel($resourceClass);
         $this->spiedProperties = $this->spyOnProperties($resourceClass);
+    }
+
+    protected function guessModel(string $resourceClass): Model
+    {
+        $baseNamespace = Regex::match('/^\\\\?([\w\d]+)\\\\/', $resourceClass)->group(1);
+
+        $className = class_basename($resourceClass);
+
+        if (class_exists($modelClass = "\\{$baseNamespace}\\Models\\{$className}")) {
+            return new Model(new $modelClass);
+        }
+
+        if (class_exists($modelClass = "\\{$baseNamespace}\\{$className}")) {
+            return new Model(new $modelClass);
+        }
+
+        throw new \Exception;
     }
 
     protected function spyOnProperties(string $className)
