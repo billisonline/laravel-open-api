@@ -21,8 +21,10 @@ class OpenApiPathBuilder
      */
     private $operations;
 
-    public function __construct()
+    public function __construct(?string $path=null)
     {
+        $this->path = $path;
+
         if ($currentDef = OpenApiDefinitionBuilder::getCurrent()) {
             $currentDef->addPath($this);
         }
@@ -52,21 +54,22 @@ class OpenApiPathBuilder
         );
     }
 
-    public function path(string $path): self
+    protected function preparePath(string $path): string
     {
         if (!Str::startsWith($path, '/')) {
             $path = "/{$path}";
         }
 
-        if ($currentDef = OpenApiDefinitionBuilder::getCurrent()) {
-            if ($existing = $currentDef->findPath($path)) {
-                $currentDef->forgetPath($this); //todo this isn't great
+        return $path;
+    }
 
-                return $existing;
-            }
+    public function path(string $path): self
+    {
+        if ($definition = OpenApiDefinitionBuilder::getCurrent()) {
+            return $definition->findOrCreatePath($this->preparePath($path));
         }
 
-        $this->path = $path;
+        $this->path = $this->preparePath($path);
 
         return $this;
     }

@@ -72,6 +72,15 @@ class OpenApiDefinitionBuilder
         return $this;
     }
 
+    public function findOrCreatePath(string $path): OpenApiPathBuilder
+    {
+        if ($existing = $this->findPath($path)) {
+            return $existing;
+        }
+
+        return new OpenApiPathBuilder($path);
+    }
+
     public function registerResourceSchema(JsonResource $resource, OpenApiSchemaBuilder $schema): void
     {
         $resourceClass = $resource->resourceClass();
@@ -106,17 +115,6 @@ class OpenApiDefinitionBuilder
         );
     }
 
-    public function forgetPath(OpenApiPathBuilder $pathToForget): void
-    {
-        $this->paths = (
-            collect($this->paths)
-                ->filter(function (OpenApiPathBuilder $path) use ($pathToForget) {
-                    return $path->getPath() !== $pathToForget->getPath();
-                })
-                ->all()
-        );
-    }
-
     public function info(OpenApiInfoBuilder $info)
     {
         $this->info = $info;
@@ -130,6 +128,9 @@ class OpenApiDefinitionBuilder
             'resourceSchemas' => collect($this->resourceSchemas)->map->build()->all(),
             'paths' => (
                 collect($this->paths)
+                    ->filter(function (OpenApiPathBuilder $path) {
+                        return !is_null($path->getPath());
+                    })
                     ->map(function (OpenApiPathBuilder $path) {
                         return $path->build();
                     })
