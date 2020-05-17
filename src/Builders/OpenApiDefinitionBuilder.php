@@ -30,6 +30,11 @@ class OpenApiDefinitionBuilder
      */
     private $resourceSchemas;
 
+    /**
+     * @var ResponseSchemaWrapper
+     */
+    private $responseSchemaWrapper;
+
     public static function with(callable $callback): self
     {
         $current = static::$current = new static;
@@ -44,6 +49,20 @@ class OpenApiDefinitionBuilder
     public static function getCurrent(): ?self
     {
         return static::$current;
+    }
+
+    public function responseSchemaWrapper(ResponseSchemaWrapper $wrapper)
+    {
+        $this->responseSchemaWrapper = $wrapper;
+    }
+
+    public function wrapResponseSchema(OpenApiSchemaBuilder $schema): OpenApiSchemaBuilder
+    {
+        if (!is_null($this->responseSchemaWrapper)) {
+            return $this->responseSchemaWrapper->wrap($schema);
+        }
+
+        return $schema;
     }
 
     public function addPath(OpenApiPathBuilder $path): self

@@ -4,7 +4,6 @@ namespace BYanelli\OpenApiLaravel\Builders;
 
 use BYanelli\OpenApiLaravel\OpenApiResponse;
 use BYanelli\OpenApiLaravel\Support\JsonResource;
-use BYanelli\OpenApiLaravel\Support\Model;
 use Illuminate\Support\Traits\Tappable;
 
 class OpenApiResponseBuilder
@@ -40,11 +39,15 @@ class OpenApiResponseBuilder
 
         $schema = OpenApiSchemaBuilder::make()->fromResource($resource);
 
-        // If we're in a definition context, register the resource as a schema and use the "ref" in this response
+        // If we're in a definition context
         if ($definition = OpenApiDefinitionBuilder::getCurrent()) {
+            // Register the resource as a schema
             $definition->registerResourceSchema($resource, $schema);
 
-            return $this->jsonSchema($definition->getSchemaRefForResource($resource));
+            // Use the "ref" instead of the full resource definition
+            $resourceRef = $definition->getSchemaRefForResource($resource);
+
+            return $this->jsonSchema($resourceRef);
         }
 
         return $this->jsonSchema($schema);
@@ -59,9 +62,18 @@ class OpenApiResponseBuilder
 
     public function jsonSchema(OpenApiSchemaBuilder $jsonSchema): self
     {
-        $this->jsonSchema = $jsonSchema;
+        $this->jsonSchema = $this->wrap($jsonSchema);
         
         return $this;
+    }
+
+    protected function wrap(OpenApiSchemaBuilder $schema): OpenApiSchemaBuilder
+    {
+        if ($definition = OpenApiDefinitionBuilder::getCurrent()) {
+            $schema = $definition->wrapResponseSchema($schema);
+        }
+
+        return $schema;
     }
 
     public function build()

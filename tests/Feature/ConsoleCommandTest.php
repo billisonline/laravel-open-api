@@ -32,7 +32,12 @@ class ConsoleCommandTest extends TestCase
                                         'content' => [
                                             'application/json' => [
                                                 'schema' => [
-                                                    '$ref' => '#/components/schemas/resources/Post'
+                                                    'type' => 'object',
+                                                    'properties' => [
+                                                        'data' => [
+                                                            '$ref' => '#/components/schemas/resources/Post',
+                                                        ]
+                                                    ]
                                                 ]
                                             ]
                                         ]

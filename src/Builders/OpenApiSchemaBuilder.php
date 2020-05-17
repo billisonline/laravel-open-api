@@ -3,6 +3,7 @@
 namespace BYanelli\OpenApiLaravel\Builders;
 
 use BYanelli\OpenApiLaravel\OpenApiNamedSchema;
+use BYanelli\OpenApiLaravel\OpenApiNamedSchemaRef;
 use BYanelli\OpenApiLaravel\OpenApiSchema;
 use BYanelli\OpenApiLaravel\OpenApiSchemaRef;
 use BYanelli\OpenApiLaravel\Support\JsonResource;
@@ -93,6 +94,13 @@ class OpenApiSchemaBuilder
 
     public function build()
     {
+        if (!empty($this->ref) && !empty($this->name)) {
+            return new OpenApiNamedSchemaRef([
+                'name'  => $this->name,
+                'ref'   => $this->ref
+            ]);
+        }
+
         if (!empty($this->ref)) {
             return new OpenApiSchemaRef(['ref' => $this->ref]);
         }
