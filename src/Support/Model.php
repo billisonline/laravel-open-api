@@ -51,4 +51,9 @@ class Model
 
         return $method->getReturnType()->getName();
     }
+
+    public function model(): EloquentModel
+    {
+        return $this->model;
+    }
 }

@@ -5,7 +5,10 @@ namespace BYanelli\OpenApiLaravel\Tests\Feature;
 use BYanelli\OpenApiLaravel\Builders\OpenApiDefinitionBuilder;
 use BYanelli\OpenApiLaravel\Builders\OpenApiInfoBuilder;
 use BYanelli\OpenApiLaravel\Builders\OpenApiPathBuilder;
+use BYanelli\OpenApiLaravel\Support\JsonResource;
+use BYanelli\OpenApiLaravel\Tests\Support\AlternateUserResource;
 use BYanelli\OpenApiLaravel\Tests\TestCase;
+use TestApp\User;
 
 class DefinitionBuilderTest extends TestCase
 {
@@ -37,5 +40,18 @@ class DefinitionBuilderTest extends TestCase
             ],
             $def->build()->toArray()
         );
+    }
+
+    /** @test */
+    public function specify_model_for_resource()
+    {
+        OpenApiDefinitionBuilder::with(function () {
+            OpenApiDefinitionBuilder::getCurrent()
+                ->registerResourceModel(AlternateUserResource::class, User::class);
+
+            $modelClass = (new JsonResource(AlternateUserResource::class))->modelClass();
+
+            $this->assertEquals(User::class, $modelClass);
+        });
     }
 }

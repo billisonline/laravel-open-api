@@ -31,6 +31,11 @@ class OpenApiDefinitionBuilder
     private $resourceSchemas;
 
     /**
+     * @var OpenApiSchemaBuilder[]|array
+     */
+    private $resourceModels;
+
+    /**
      * @var ResponseSchemaWrapper
      */
     private $responseSchemaWrapper;
@@ -54,6 +59,8 @@ class OpenApiDefinitionBuilder
     public function responseSchemaWrapper(ResponseSchemaWrapper $wrapper)
     {
         $this->responseSchemaWrapper = $wrapper;
+        
+        return $this;
     }
 
     public function wrapResponseSchema(OpenApiSchemaBuilder $schema): OpenApiSchemaBuilder
@@ -79,6 +86,18 @@ class OpenApiDefinitionBuilder
         }
 
         return new OpenApiPathBuilder($path);
+    }
+
+    public function registerResourceModel(string $resource, string $model): self
+    {
+        $this->resourceModels[$resource] = $model;
+
+        return $this;
+    }
+
+    public function getRegisteredResourceModel(string $resource): ?string
+    {
+        return $this->resourceModels[$resource] ?? null;
     }
 
     public function registerResourceSchema(JsonResource $resource, OpenApiSchemaBuilder $schema): void

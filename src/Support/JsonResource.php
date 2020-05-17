@@ -2,6 +2,7 @@
 
 namespace BYanelli\OpenApiLaravel\Support;
 
+use BYanelli\OpenApiLaravel\Builders\OpenApiDefinitionBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource as BaseJsonResource;
 use Spatie\Regex\Regex;
@@ -36,6 +37,12 @@ class JsonResource
 
     protected function guessModel(string $resourceClass): Model
     {
+        if ($definition = OpenApiDefinitionBuilder::getCurrent()) {
+            if ($modelClass = $definition->getRegisteredResourceModel($resourceClass)) {
+                return new Model(new $modelClass);
+            }
+        }
+
         $baseNamespace = Regex::match('/^\\\\?([\w\d]+)\\\\/', $resourceClass)->group(1);
 
         $className = class_basename($resourceClass);
@@ -144,6 +151,14 @@ class JsonResource
     public function resourceClass(): string
     {
         return $this->resourceClass;
+    }
+
+    /**
+     * @return string
+     */
+    public function modelClass(): string
+    {
+        return get_class($this->model->model());
     }
 
     protected function fixPhpType(string $type): string
