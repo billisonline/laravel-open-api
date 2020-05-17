@@ -102,7 +102,7 @@ class JsonResource
         }
 
         if ($this->model->hasGetMutator($accessor)) {
-            $type = $this->model->getGetMutatorType($accessor);
+            $type = $this->fixPhpType($this->model->getGetMutatorType($accessor));
         }
 
         if (!isset($type)) {
@@ -123,6 +123,18 @@ class JsonResource
             return 'string';
         }
 
+        if ($type == 'bigint') {
+            return 'integer';
+        }
+
+        if ($type == 'date') {
+            return 'string';
+        }
+
+        if ($type == 'bool') {
+            return 'boolean';
+        }
+
         return $type;
     }
 
@@ -132,5 +144,14 @@ class JsonResource
     public function resourceClass(): string
     {
         return $this->resourceClass;
+    }
+
+    protected function fixPhpType(string $type): string
+    {
+        if ($type == 'bool') {
+            return 'boolean';
+        }
+
+        return $type;
     }
 }

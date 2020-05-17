@@ -26,6 +26,11 @@ class JsonResourcePropertySpy
         return $this->accessors[0];
     }
 
+    public function __call($name, $arguments)
+    {
+        return $this; //todo
+    }
+
     /*public function __call($name, $arguments)
     {
         if (

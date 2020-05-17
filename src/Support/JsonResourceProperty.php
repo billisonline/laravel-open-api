@@ -36,7 +36,7 @@ class JsonResourceProperty
 
     private function validateType(string $type): void
     {
-        if (!in_array($type, ['string', 'integer', 'json_resource', 'json_resource_array'])) {
+        if (!in_array($type, ['string', 'integer', 'boolean', 'json_resource', 'json_resource_array'])) {
             throw new \Exception($type);
         }
     }
