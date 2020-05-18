@@ -67,4 +67,19 @@ class Action
 
         return Regex::match('/^([A-Za-z]+)Controller$/', $controllerName)->groupOr(1, $controllerName);
     }
+
+    public function responseClass(): ?string
+    {
+        $method = new \ReflectionMethod($this->controller(), $this->actionMethod());
+
+        if (is_null($returnType = $method->getReturnType())) {
+            return null;
+        }
+
+        if (!($returnType instanceof \ReflectionNamedType)) {
+            return null;
+        }
+
+        return $returnType->getName();
+    }
 }

@@ -33,6 +33,11 @@ class OpenApiDefinitionBuilder
     /**
      * @var OpenApiSchemaBuilder[]|array
      */
+    private $responseSchemas;
+
+    /**
+     * @var OpenApiSchemaBuilder[]|array
+     */
     private $resourceModels;
 
     /**
@@ -95,12 +100,24 @@ class OpenApiDefinitionBuilder
         return $this;
     }
 
+    public function registerResponseSchema(string $response, OpenApiSchemaBuilder $schema): self
+    {
+        $this->responseSchemas[$response] = $schema;
+
+        return $this;
+    }
+
+    public function getResponseSchema(string $response): ?OpenApiSchemaBuilder
+    {
+        return $this->responseSchemas[$response] ?? null;
+    }
+
     public function getRegisteredResourceModel(string $resource): ?string
     {
         return $this->resourceModels[$resource] ?? null;
     }
 
-    public function registerResourceSchema(JsonResource $resource, OpenApiSchemaBuilder $schema): void
+    public function registerResourceSchema(JsonResource $resource, OpenApiSchemaBuilder $schema): self
     {
         $resourceClass = $resource->resourceClass();
 
@@ -109,6 +126,8 @@ class OpenApiDefinitionBuilder
         if (!isset($this->resourceSchemas[$resourceClass])) {
             $this->resourceSchemas[$resourceClass] = $schema;
         }
+        
+        return $this;
     }
 
     private function getRefPathForResource(JsonResource $resource): string

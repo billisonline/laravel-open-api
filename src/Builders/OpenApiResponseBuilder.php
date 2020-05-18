@@ -37,6 +37,14 @@ class OpenApiResponseBuilder
             throw new \Exception;
         }
 
+        // todo
+        /*
+        // If we're in a definition context
+        if ($definition = OpenApiDefinitionBuilder::getCurrent()) {
+            // If the resource schema has already been registered
+            if ($schema = ???) //todo
+        */
+
         $schema = OpenApiSchemaBuilder::make()->fromResource($resource);
 
         // If we're in a definition context
@@ -51,6 +59,19 @@ class OpenApiResponseBuilder
         }
 
         return $this->jsonSchema($schema);
+    }
+
+    public function fromResponse(string $response, int $status=200): self
+    {
+        $this->status($status);
+
+        if ($definition = OpenApiDefinitionBuilder::getCurrent()) {
+            if ($schema = $definition->getResponseSchema($response)) {
+                $this->jsonSchema($schema);
+            }
+        }
+
+        return $this;
     }
 
     public function status(int $status): self

@@ -89,6 +89,13 @@ class OpenApiOperationBuilder
                             OpenApiParameterBuilder::make()->fromPathParameter($parameter)
                         );
                     }
+
+                    if ($responseClass = $action->responseClass()) {
+                        // todo: multiple status codes
+                        $operation->addResponse(
+                            OpenApiResponseBuilder::make()->fromResponse($responseClass)
+                        );
+                    }
                 })
         );
     }
