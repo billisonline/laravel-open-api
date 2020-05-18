@@ -64,6 +64,19 @@ class OpenApiSchemaBuilder
         return $this;
     }
 
+    public function object(array $properties): self
+    {
+        $this->type('object');
+
+        foreach ($properties as $name => $type) {
+            $this->addProperty(
+                self::make()->name($name)->type($type)
+            );
+        }
+
+        return $this;
+    }
+
     public function nullable(bool $nullable): self
     {
         $this->nullable = $nullable;
