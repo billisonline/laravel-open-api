@@ -7,6 +7,9 @@ use BYanelli\OpenApiLaravel\Support\Action;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Tappable;
 
+/**
+ * @mixin OpenApiOperationBuilder
+ */
 class OpenApiPathBuilder
 {
     use Tappable, StaticallyConstructible;
@@ -92,5 +95,11 @@ class OpenApiPathBuilder
     public function getPath()
     {
         return $this->path; //todo all setters should be "withX"
+    }
+
+    public function __call($name, $arguments)
+    {
+        //todo: error handling
+        $this->operations[0]->{$name}(...$arguments);
     }
 }
