@@ -73,12 +73,10 @@ class DefinitionBuilderTest extends TestCase
                 OpenApiInfoBuilder::make()->title('title')->version('version');
 
                 ResponseProperties::for(TokenResponse::class)
-                    ->setSchema(
-                        OpenApiSchemaBuilder::make()->object([
-                            'token'     => 'string',
-                            'expiresAt' => 'string',
-                        ])
-                    );
+                    ->setSchema([
+                        'token'     => 'string',
+                        'expiresAt' => 'string',
+                    ]);
 
                 OpenApiPathBuilder::make()->fromActionName([UserController::class, 'authenticate']);
             },
@@ -86,7 +84,7 @@ class DefinitionBuilderTest extends TestCase
             [
                 'type' => 'object',
                 'properties' => [
-                    'token' => ['type' => 'string'],
+                    'token'     => ['type' => 'string'],
                     'expiresAt' => ['type' => 'string'],
                 ]
             ]
@@ -110,13 +108,11 @@ class DefinitionBuilderTest extends TestCase
                 OpenApiInfoBuilder::make()->title('title')->version('version');
 
                 JsonResourceProperties::for(AlternateUserResource::class)
-                    ->setSchema(
-                        OpenApiSchemaBuilder::make()->object([
-                            'userEmail'     => 'string',
-                            'userFirstName' => 'string',
-                            'userLastName'  => 'string',
-                        ])
-                    );
+                    ->setSchema([
+                        'userEmail'     => 'string',
+                        'userFirstName' => 'string',
+                        'userLastName'  => 'string',
+                    ]);
 
                 OpenApiResponseBuilder::make()->fromResource(AlternateUserResource::class);
             },

@@ -39,8 +39,14 @@ class ResponseProperties
         $this->response = $response;
     }
 
-    public function setSchema(OpenApiSchemaBuilder $schema): self
+    /**
+     * @param OpenApiSchemaBuilder|array $schema
+     * @return $this
+     */
+    public function setSchema($schema): self
     {
+        if (is_array($schema)) {$schema = OpenApiSchemaBuilder::fromArray($schema);}
+
         $this->schema = $schema;
 
         return $this;

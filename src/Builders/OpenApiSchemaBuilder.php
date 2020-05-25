@@ -39,6 +39,11 @@ class OpenApiSchemaBuilder
      */
     private $ref = '';
 
+    public static function fromArray(array $array): self
+    {
+        return (new static)->object($array);
+    }
+
     public function fromResource(JsonResource $resource): self
     {
         if ($schema = $resource->definedProperties()->schema()) {
