@@ -34,19 +34,16 @@ class OpenApiPathBuilder
     }
 
     /**
-     * @param callable|array|string $action
+     * @param Action|array|string $action
      * @param callable|null $tapOperation
      * @return $this
      */
-    public function fromActionName($action, ?callable $tapOperation=null): self
+    public function fromAction($action, ?callable $tapOperation=null): self
     {
-        $action = Action::fromName($action);
-
-        return (new static)->fromAction($action, $tapOperation);
-    }
-
-    public function fromAction(Action $action, ?callable $tapOperation=null): self
-    {
+        if (is_array($action) || is_string($action)) {
+            $action = Action::fromName($action);
+        }
+        
         return (
             $this->path($action->uri())
                 ->addOperation(

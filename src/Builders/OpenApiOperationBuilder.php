@@ -6,6 +6,8 @@ use BYanelli\OpenApiLaravel\OpenApiOperation;
 use BYanelli\OpenApiLaravel\OpenApiParameter;
 use BYanelli\OpenApiLaravel\OpenApiResponse;
 use BYanelli\OpenApiLaravel\Support\Action;
+use BYanelli\OpenApiLaravel\Support\JsonResource;
+use Illuminate\Http\Resources\Json\JsonResource as LaravelJsonResource;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Tappable;
 
@@ -70,8 +72,30 @@ class OpenApiOperationBuilder
         return $this;
     }
 
-    public function addResponse(OpenApiResponseBuilder $response): self
+    private function isJsonResource($val): bool
     {
+        if (is_object($val) && ($val instanceof JsonResource)) {
+            return true;
+        }
+
+        if (is_string($val) && class_exists($val) && is_subclass_of($val, LaravelJsonResource::class)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param OpenApiResponseBuilder|JsonResource|string $response
+     * @return $this
+     * @throws \Exception
+     */
+    public function addResponse($response): self
+    {
+        if ($this->isJsonResource($response)) {
+            $response = OpenApiResponseBuilder::make()->fromResource($response);
+        }
+
         $this->responses[] = $response;
 
         return $this;

@@ -20,7 +20,7 @@ class PathBuilderTest extends TestCase
                 ]
             ],
             OpenApiPathBuilder::make()
-                ->fromActionName([PostController::class, 'index'], function (OpenApiOperationBuilder $operation) {
+                ->fromAction([PostController::class, 'index'], function (OpenApiOperationBuilder $operation) {
                     $operation->description('test');
                 })
                 ->build()
@@ -46,7 +46,7 @@ class PathBuilderTest extends TestCase
                 ]
             ],
             OpenApiPathBuilder::make()
-                ->fromActionName([PostController::class, 'show'])
+                ->fromAction([PostController::class, 'show'])
                 ->build()
                 ->toArray()
         );

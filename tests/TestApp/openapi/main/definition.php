@@ -14,8 +14,8 @@ OpenApiDefinitionBuilder::getCurrent()
 
 OpenApiInfoBuilder::make()->title('test')->version('1.0');
 
-OpenApiPathBuilder::make()->fromActionName([PostController::class, 'index']);
-OpenApiPathBuilder::make()->fromActionName([PostController::class, 'show'], function (OpenApiOperationBuilder $operation) {
+OpenApiPathBuilder::make()->fromAction([PostController::class, 'index']);
+OpenApiPathBuilder::make()->fromAction([PostController::class, 'show'], function (OpenApiOperationBuilder $operation) {
     $operation->addResponse(OpenApiResponseBuilder::make()->fromResource(Post::class));
 });
-OpenApiPathBuilder::make()->fromActionName([PostController::class, 'store']);
+OpenApiPathBuilder::make()->fromAction([PostController::class, 'store']);
