@@ -31,19 +31,14 @@ class OpenApiDefinitionBuilder
     private $resourceSchemas;
 
     /**
-     * @var OpenApiSchemaBuilder[]|array
-     */
-    private $responseSchemas;
-
-    /**
-     * @var OpenApiSchemaBuilder[]|array
-     */
-    private $resourceModels;
-
-    /**
      * @var ResponseSchemaWrapper
      */
     private $responseSchemaWrapper;
+    
+    /** 
+     * @var array 
+     */
+    private $properties;
 
     public static function with(callable $callback): self
     {
@@ -59,6 +54,18 @@ class OpenApiDefinitionBuilder
     public static function getCurrent(): ?self
     {
         return static::$current;
+    }
+
+    public function getPropertiesInstance(string $class, string $scope): ?object
+    {
+        return $this->properties[$class][$scope] ?? null;
+    }
+
+    public function setPropertiesInstance(string $class, string $scope, object $instance): self
+    {
+        $this->properties[$class][$scope] = $instance;
+
+        return $this;
     }
 
     public function responseSchemaWrapper(ResponseSchemaWrapper $wrapper)
@@ -91,30 +98,6 @@ class OpenApiDefinitionBuilder
         }
 
         return new OpenApiPathBuilder($path);
-    }
-
-    public function registerResourceModel(string $resource, string $model): self
-    {
-        $this->resourceModels[$resource] = $model;
-
-        return $this;
-    }
-
-    public function registerResponseSchema(string $response, OpenApiSchemaBuilder $schema): self
-    {
-        $this->responseSchemas[$response] = $schema;
-
-        return $this;
-    }
-
-    public function getResponseSchema(string $response): ?OpenApiSchemaBuilder
-    {
-        return $this->responseSchemas[$response] ?? null;
-    }
-
-    public function getRegisteredResourceModel(string $resource): ?string
-    {
-        return $this->resourceModels[$resource] ?? null;
     }
 
     public function registerResourceSchema(JsonResource $resource, OpenApiSchemaBuilder $schema): self

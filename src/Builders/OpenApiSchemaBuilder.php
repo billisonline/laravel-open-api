@@ -41,6 +41,10 @@ class OpenApiSchemaBuilder
 
     public function fromResource(JsonResource $resource): self
     {
+        if ($schema = $resource->definedProperties()->schema()) {
+            return $schema;
+        }
+
         $this->type('object');
 
         foreach ($resource->properties() as $property) {

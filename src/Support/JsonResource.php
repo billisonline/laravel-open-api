@@ -2,7 +2,7 @@
 
 namespace BYanelli\OpenApiLaravel\Support;
 
-use BYanelli\OpenApiLaravel\Builders\OpenApiDefinitionBuilder;
+use BYanelli\OpenApiLaravel\Builders\OpenApiSchemaBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource as BaseJsonResource;
 use Spatie\Regex\Regex;
@@ -20,31 +20,28 @@ class JsonResource
     private $model;
 
     /**
-     * @var array
+     * @var JsonResourceProperties
      */
-    protected $spiedProperties;
+    protected $definedProperties;
 
-    public function __construct(string $resourceClass, ?Model $model=null)
+    public function __construct(string $resourceClass)
     {
         if (!is_subclass_of($resourceClass, BaseJsonResource::class)) {
             throw new \Exception;
         }
 
         $this->resourceClass = $resourceClass;
-        $this->model = $model ?: $this->guessModel($resourceClass);
-        $this->spiedProperties = $this->spyOnProperties($resourceClass);
+        $this->definedProperties = JsonResourceProperties::for($resourceClass);
     }
 
-    protected function guessModel(string $resourceClass): Model
+    protected function model(): Model
     {
-        if ($definition = OpenApiDefinitionBuilder::getCurrent()) {
-            if ($modelClass = $definition->getRegisteredResourceModel($resourceClass)) {
-                return new Model(new $modelClass);
-            }
+        if ($model = $this->definedProperties->modelInstance()) {
+            return $model;
         }
 
+        $resourceClass = $this->resourceClass;
         $baseNamespace = Regex::match('/^\\\\?([\w\d]+)\\\\/', $resourceClass)->group(1);
-
         $className = class_basename($resourceClass);
 
         if (class_exists($modelClass = "\\{$baseNamespace}\\Models\\{$className}")) {
@@ -58,8 +55,10 @@ class JsonResource
         throw new \Exception;
     }
 
-    protected function spyOnProperties(string $className)
+    protected function spyOnProperties()
     {
+        $className = $this->resourceClass;
+
         $spy = new JsonResourceSpy();
 
         /** @var BaseJsonResource $instance */
@@ -75,7 +74,7 @@ class JsonResource
     public function properties(): array
     {
         return (
-            collect($this->spiedProperties)
+            collect($this->spyOnProperties())
                 ->map(function ($rawProperty, string $name): JsonResourceProperty {
                     return $this->convertRawProperty($rawProperty, $name);
                 })
@@ -104,12 +103,12 @@ class JsonResource
         $accessor = $propertySpy->accessor();
         $isConditional = $propertySpy->isConditional();
 
-        if ($this->model->hasColumn($accessor)) {
-            $type = $this->fixDatabaseType($this->model->getColumnType($accessor));
+        if ($this->model()->hasColumn($accessor)) {
+            $type = $this->fixDatabaseType($this->model()->getColumnType($accessor));
         }
 
-        if ($this->model->hasGetMutator($accessor)) {
-            $type = $this->fixPhpType($this->model->getGetMutatorType($accessor));
+        if ($this->model()->hasGetMutator($accessor)) {
+            $type = $this->fixPhpType($this->model()->getGetMutatorType($accessor));
         }
 
         if (!isset($type)) {
@@ -158,7 +157,7 @@ class JsonResource
      */
     public function modelClass(): string
     {
-        return get_class($this->model->model());
+        return get_class($this->model()->model());
     }
 
     protected function fixPhpType(string $type): string
@@ -168,5 +167,32 @@ class JsonResource
         }
 
         return $type;
+    }
+
+    public function schema(): OpenApiSchemaBuilder
+    {
+        if ($schema = $this->definedProperties->schema()) {
+            return $schema;
+        }
+
+        return OpenApiSchemaBuilder::make()->tap(function (OpenApiSchemaBuilder $schema) {
+            $schema->type('object');
+
+            foreach ($this->properties() as $property) {
+                if ($property->type() == 'json_resource') {continue;} //todo: refs
+
+                $schema->addProperty(
+                    OpenApiSchemaBuilder::make()
+                        ->name($property->name())
+                        ->type($property->type())
+                        ->nullable($property->isConditional())
+                );
+            }
+        });
+    }
+
+    public function definedProperties(): JsonResourceProperties
+    {
+        return $this->definedProperties;
     }
 }

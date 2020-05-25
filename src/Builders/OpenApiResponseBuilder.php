@@ -4,6 +4,7 @@ namespace BYanelli\OpenApiLaravel\Builders;
 
 use BYanelli\OpenApiLaravel\OpenApiResponse;
 use BYanelli\OpenApiLaravel\Support\JsonResource;
+use BYanelli\OpenApiLaravel\Support\ResponseProperties;
 use Illuminate\Support\Traits\Tappable;
 
 class OpenApiResponseBuilder
@@ -37,14 +38,6 @@ class OpenApiResponseBuilder
             throw new \Exception;
         }
 
-        // todo
-        /*
-        // If we're in a definition context
-        if ($definition = OpenApiDefinitionBuilder::getCurrent()) {
-            // If the resource schema has already been registered
-            if ($schema = ???) //todo
-        */
-
         $schema = OpenApiSchemaBuilder::make()->fromResource($resource);
 
         // If we're in a definition context
@@ -65,10 +58,10 @@ class OpenApiResponseBuilder
     {
         $this->status($status);
 
-        if ($definition = OpenApiDefinitionBuilder::getCurrent()) {
-            if ($schema = $definition->getResponseSchema($response)) {
-                $this->jsonSchema($schema);
-            }
+        if ($schema = ResponseProperties::for($response)->schema()) {
+            //todo: ref
+
+            $this->jsonSchema($schema);
         }
 
         return $this;
