@@ -7,8 +7,8 @@ use BYanelli\OpenApiLaravel\OpenApiNamedSchemaRef;
 use BYanelli\OpenApiLaravel\OpenApiSchema;
 use BYanelli\OpenApiLaravel\OpenApiSchemaRef;
 use BYanelli\OpenApiLaravel\Support\JsonResource;
-use BYanelli\OpenApiLaravel\Support\Model;
-use Illuminate\Support\Traits\Tappable;
+use BYanelli\OpenApiLaravel\Support\Tappable;
+use Illuminate\Support\Str;
 
 class OpenApiSchemaBuilder
 {
@@ -18,6 +18,11 @@ class OpenApiSchemaBuilder
      * @var string
      */
     private $type;
+
+    /**
+     * @var OpenApiSchemaBuilder
+     */
+    private $items;
 
     /**
      * @var bool
@@ -73,13 +78,56 @@ class OpenApiSchemaBuilder
         return $this;
     }
 
+    private function parseName(string $name): array
+    {
+        if (Str::endsWith($name, '[]')) {
+            return [str_replace('[]', '', $name), true];
+        }
+
+        return [$name, false];
+    }
+
+    private function parseType($type): array
+    {
+        if (is_array($type)) {
+            return ['object', $type];
+        }
+
+        return [$type, []];
+    }
+
     public function object(array $properties): self
     {
-        $this->type('object');
+        return $this->type('object')->addProperties($properties);
+    }
 
+    public function addProperties(array $properties): self
+    {
+        /** @var string $name */
+        /** @var string $type */
         foreach ($properties as $name => $type) {
+            /** @var bool $isArray */
+            /** @var array $objectProperties */
+            [$name, $isArray] = $this->parseName($name);
+            [$type, $objectProperties] = $this->parseType($type);
+
             $this->addProperty(
-                self::make()->name($name)->type($type)
+                self::make()
+                    ->name($name)
+                    ->when($isArray, function (self $property) use ($type, $objectProperties) {
+                        $property
+                            ->type('array')
+                            ->items(
+                                self::make()
+                                    ->type($type)
+                                    ->addProperties($objectProperties)
+                            );
+                    })
+                    ->unless($isArray, function (self $property) use ($type, $objectProperties) {
+                        $property
+                            ->type($type)
+                            ->addProperties($objectProperties);
+                    })
             );
         }
 
@@ -114,6 +162,13 @@ class OpenApiSchemaBuilder
         return $this;
     }
 
+    public function items(OpenApiSchemaBuilder $items): self
+    {
+        $this->items = $items;
+
+        return $this;
+    }
+
     public function build()
     {
         if (!empty($this->ref) && !empty($this->name)) {
@@ -131,6 +186,7 @@ class OpenApiSchemaBuilder
 
         $params = [
             'type'      => $this->type,
+            'items'     => optional($this->items)->build(),
             'nullable'  => $this->nullable,
             'properties' => collect($this->properties)->map->build()->all(),
         ];

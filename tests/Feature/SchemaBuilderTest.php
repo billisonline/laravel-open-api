@@ -11,8 +11,13 @@ class SchemaBuilderTest extends TestCase
     public function build_object_schema()
     {
         $schema = OpenApiSchemaBuilder::make()->object([
-            'id' => 'integer',
-            'name' => 'string',
+            'id'        => 'integer',
+            'name'      => 'string',
+            'tags[]'    => 'string',
+            'others[]'  => [
+                'id'    => 'integer',
+                'name'  => 'string',
+            ]
         ]);
 
         $this->assertEquals(
@@ -21,6 +26,22 @@ class SchemaBuilderTest extends TestCase
                 'properties' => [
                     'id' => ['type' => 'integer'],
                     'name' => ['type' => 'string'],
+                    'tags' => [
+                        'type' => 'array',
+                        'items' => [
+                            'type' => 'string',
+                        ]
+                    ],
+                    'others' => [
+                        'type' => 'array',
+                        'items' => [
+                            'type' => 'object',
+                            'properties' => [
+                                'id' => ['type' => 'integer'],
+                                'name' => ['type' => 'string'],
+                            ]
+                        ]
+                    ],
                 ]
             ],
             $schema->build()->toArray()
