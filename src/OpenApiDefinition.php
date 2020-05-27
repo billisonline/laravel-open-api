@@ -55,12 +55,12 @@ class OpenApiDefinition extends DataTransferObject
     {
         if (empty($resourceSchemas)) {return [];}
 
-        return ['components' => ['schemas' => ['resources' =>
+        return ['components' => ['schemas' =>
             collect($resourceSchemas)
                 ->keyBy(function (OpenApiNamedSchema $schema) {return $schema->name;})
                 ->map(function (OpenApiNamedSchema $schema) {return $schema->toArray();})
                 ->all()
-        ]]];
+        ]];
     }
 
 }

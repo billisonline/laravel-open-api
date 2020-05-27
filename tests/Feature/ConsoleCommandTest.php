@@ -48,12 +48,13 @@ class ConsoleCommandTest extends TestCase
                                                     'type' => 'object',
                                                     'properties' => [
                                                         'data' => [
-                                                            '$ref' => '#/components/schemas/resources/Post',
+                                                            '$ref' => '#/components/schemas/Post',
                                                         ]
                                                     ]
                                                 ]
                                             ]
-                                        ]
+                                        ],
+                                        'description' => 'Success',
                                     ]
                                 ],
                                 'parameters' => [
@@ -73,22 +74,20 @@ class ConsoleCommandTest extends TestCase
                     ],
                     'components' => [
                         'schemas' => [
-                            'resources' => [
-                                'Post' => [
-                                    'type' => 'object',
-                                    'properties' => [
-                                        'id' => [
-                                            'type' => 'integer',
-                                        ],
-                                        'body' => [
-                                            'type' => 'string',
-                                            'nullable' => true,
-                                        ],
-                                        'headlineSlug' => [
-                                            'type' => 'string',
-                                        ],
+                            'Post' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'id' => [
+                                        'type' => 'integer',
                                     ],
-                                ]
+                                    'body' => [
+                                        'type' => 'string',
+                                        'nullable' => true,
+                                    ],
+                                    'headlineSlug' => [
+                                        'type' => 'string',
+                                    ],
+                                ],
                             ]
                         ]
                     ]

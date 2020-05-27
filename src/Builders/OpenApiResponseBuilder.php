@@ -21,6 +21,8 @@ class OpenApiResponseBuilder
      */
     private $jsonSchema;
 
+    private $description = 'Success'; //todo
+
     /**
      * @param JsonResource|string $resource
      * @return $this
@@ -94,6 +96,7 @@ class OpenApiResponseBuilder
     {
         return new OpenApiResponse([
             'status'        => $this->status,
+            'description'   => $this->description,
             'jsonSchema'    => $this->jsonSchema->build(),
         ]);
     }

@@ -35,6 +35,7 @@ class OperationBuilderTest extends TestCase
             [
                 'responses' => [
                     200 => [
+                        'description' => 'Success',
                         'content' => [
                             'application/json' => [
                                 'schema' => [
@@ -64,6 +65,7 @@ class OperationBuilderTest extends TestCase
             [
                 'responses' => [
                     200 => [
+                        'description' => 'Success',
                         'content' => [
                             'application/json' => [
                                 'schema' => [

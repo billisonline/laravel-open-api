@@ -117,7 +117,7 @@ class OpenApiDefinitionBuilder
     {
         $name = class_basename($resource->resourceClass());
 
-        return "#/components/schemas/resources/{$name}";
+        return "#/components/schemas/{$name}";
     }
 
     public function getSchemaRefForResource(JsonResource $resource): OpenApiSchemaBuilder

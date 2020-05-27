@@ -116,7 +116,7 @@ class DefinitionBuilderTest extends TestCase
 
                 OpenApiResponseBuilder::make()->fromResource(AlternateUserResource::class);
             },
-            'components.schemas.resources.AlternateUserResource',
+            'components.schemas.AlternateUserResource',
             [
                 'type' => 'object',
                 'properties' => [
