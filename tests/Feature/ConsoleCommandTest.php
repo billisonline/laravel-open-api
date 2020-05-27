@@ -9,7 +9,7 @@ class ConsoleCommandTest extends TestCase
     /** @test */
     public function output_definition_from_console_command()
     {
-        $this->artisan('openapi:generate')->test->setOutputCallback(function (string $output) {
+        $this->artisan('openapi:spec')->test->setOutputCallback(function (string $output) {
             $output = json_decode($output, true);
 
             $this->assertEquals(

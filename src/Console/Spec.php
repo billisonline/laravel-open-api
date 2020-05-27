@@ -5,9 +5,9 @@ namespace BYanelli\OpenApiLaravel\Console;
 use BYanelli\OpenApiLaravel\Builders\OpenApiDefinitionBuilder;
 use Illuminate\Console\Command;
 
-class Generate extends Command
+class Spec extends Command
 {
-    protected $signature = 'openapi:generate {--definition=main}';
+    protected $signature = 'openapi:spec {--definition=main}';
 
     public function handle()
     {
