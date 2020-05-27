@@ -2,6 +2,7 @@
 
 namespace BYanelli\OpenApiLaravel;
 
+use BYanelli\OpenApiLaravel\Console\Generate;
 use BYanelli\OpenApiLaravel\Console\Spec;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
@@ -19,6 +20,7 @@ class OpenApiServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 Spec::class,
+                Generate::class,
             ]);
         }
     }

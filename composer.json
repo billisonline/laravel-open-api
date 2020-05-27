@@ -15,7 +15,8 @@
         "spatie/data-transfer-object": "^1.13",
         "spatie/regex": "^1.4",
         "ext-json": "*",
-        "doctrine/dbal": "^2.10"
+        "doctrine/dbal": "^2.10",
+        "mikehaertl/php-shellcommand": "^1.6"
     },
     "require-dev": {
         "phpunit/phpunit": "^8",
