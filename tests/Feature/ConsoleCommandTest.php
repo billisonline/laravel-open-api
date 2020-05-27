@@ -22,6 +22,19 @@ class ConsoleCommandTest extends TestCase
                             ],
                             'post' =>  [
                                 'operationId' => 'storePost',
+                                'requestBody' => [
+                                    'content' => [
+                                        'application/json' => [
+                                            'schema' => [
+                                                'type' => 'object',
+                                                'properties' => [
+                                                    'title' => ['type' => 'string'],
+                                                    'body' => ['type' => 'string'],
+                                                ]
+                                            ]
+                                        ]
+                                    ]
+                                ]
                             ],
                         ],
                         '/api/posts/{post}' => [

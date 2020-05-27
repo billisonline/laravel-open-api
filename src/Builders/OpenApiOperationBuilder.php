@@ -4,6 +4,7 @@ namespace BYanelli\OpenApiLaravel\Builders;
 
 use BYanelli\OpenApiLaravel\OpenApiOperation;
 use BYanelli\OpenApiLaravel\OpenApiParameter;
+use BYanelli\OpenApiLaravel\OpenApiRequestBody;
 use BYanelli\OpenApiLaravel\OpenApiResponse;
 use BYanelli\OpenApiLaravel\Support\Action;
 use BYanelli\OpenApiLaravel\Support\JsonResource;
@@ -29,6 +30,11 @@ class OpenApiOperationBuilder
      * @var OpenApiParameter[]|array
      */
     private $parameters = [];
+
+    /**
+     * @var OpenApiRequestBody|null
+     */
+    private $request;
 
     /**
      * @var OpenApiResponse[]|array
@@ -61,6 +67,7 @@ class OpenApiOperationBuilder
             'operationId' => $this->operationId,
             'description' => $this->description,
             'parameters' => collect($this->parameters)->map->build()->all(),
+            'requestBody' => optional($this->request)->build(),
             'responses' => collect($this->responses)->map->build()->all(),
         ]);
     }
@@ -122,6 +129,25 @@ class OpenApiOperationBuilder
                     }
                 })
         );
+    }
+
+    /**
+     * @param OpenApiRequestBodyBuilder|OpenApiSchemaBuilder|array $request
+     * @return $this
+     */
+    public function request($request): self
+    {
+        if (is_array($request)) {
+            $request = OpenApiSchemaBuilder::fromArray($request);
+        }
+
+        if ($request instanceof OpenApiSchemaBuilder) {
+            $request = OpenApiRequestBodyBuilder::make()->jsonSchema($request);
+        }
+
+        $this->request = $request;
+
+        return $this;
     }
 
     public function operationId(string $operationId): self

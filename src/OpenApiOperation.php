@@ -20,6 +20,9 @@ class OpenApiOperation extends DataTransferObject
     /** @var \BYanelli\OpenApiLaravel\OpenApiResponse[]|array  */
     public $responses = [];
 
+    /** @var \BYanelli\OpenApiLaravel\OpenApiRequestBody|null  */
+    public $requestBody;
+
     /** @var \BYanelli\OpenApiLaravel\OpenApiTag[]|array  */
     public $tags = [];
 
@@ -34,6 +37,7 @@ class OpenApiOperation extends DataTransferObject
         'responses',
         'tags',
         'parameters',
+        'requestBody',
     ];
 
     public $keyArrayBy = [

@@ -4,6 +4,7 @@ namespace BYanelli\OpenApiLaravel\Builders;
 
 use BYanelli\OpenApiLaravel\OpenApiPath;
 use BYanelli\OpenApiLaravel\Support\Action;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Tappable;
 
@@ -96,7 +97,9 @@ class OpenApiPathBuilder
 
     public function __call($name, $arguments)
     {
+        $operation = Arr::last($this->operations);
+
         //todo: error handling
-        $this->operations[0]->{$name}(...$arguments);
+        $operation->{$name}(...$arguments);
     }
 }

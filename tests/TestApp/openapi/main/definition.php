@@ -18,4 +18,8 @@ OpenApiPathBuilder::make()->fromAction([PostController::class, 'index']);
 OpenApiPathBuilder::make()->fromAction([PostController::class, 'show'], function (OpenApiOperationBuilder $operation) {
     $operation->addResponse(OpenApiResponseBuilder::make()->fromResource(Post::class));
 });
-OpenApiPathBuilder::make()->fromAction([PostController::class, 'store']);
+OpenApiPathBuilder::make()->fromAction([PostController::class, 'store'])
+    ->request([
+        'title' => 'string',
+        'body' => 'string',
+    ]);
