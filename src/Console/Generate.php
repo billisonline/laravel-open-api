@@ -11,6 +11,12 @@ class Generate extends \Illuminate\Console\Command
 
     public function handle()
     {
+        if (!$this->openApiGeneratorCommandExists()) {
+            $this->error('Command "openapi-generator" not found. Please install the OpenAPI Generator');
+            $this->line('https://openapi-generator.tech/docs/installation/');
+            return 1;
+        }
+
         $specPath = tempnam(sys_get_temp_dir(), 'openapi-spec');
 
         Artisan::call('openapi:spec', [
@@ -34,5 +40,12 @@ class Generate extends \Illuminate\Console\Command
         $this->error($generator->getError());
 
         return $result? 0 : 1;
+    }
+
+    private function openApiGeneratorCommandExists()
+    {
+        $generatorTest = new Command('openapi-generator help');
+
+        return $generatorTest->execute();
     }
 }
