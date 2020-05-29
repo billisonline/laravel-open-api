@@ -17,29 +17,44 @@ class Generate extends \Illuminate\Console\Command
             return 1;
         }
 
-        $specPath = tempnam(sys_get_temp_dir(), 'openapi-spec');
+        $specPath = $this->buildSpecInTempPath($this->option('definition'));
 
-        Artisan::call('openapi:spec', [
-            '--definition' => $this->option('definition'),
-            '--output' => $specPath
-        ]);
-
-        $generator = new Command('openapi-generator generate');
-
-        $generator
-            ->addArg('--generator-name=', $this->argument('generator'))
-            ->addArg('--input-spec=', $specPath)
-            ->addArg('--output=', $this->argument('output'));
-
-        $result = $generator->execute();
+        [$success, $output, $error] = $this->generate($this->argument('generator'), $specPath, $this->argument('output'));
 
         unlink($specPath);
 
-        $this->info($generator->getOutput());
+        $this->info($output);
+        $this->error($error);
 
-        $this->error($generator->getError());
+        return $success? 0 : 1;
+    }
 
-        return $result? 0 : 1;
+    private function buildSpecInTempPath(string $definition): string
+    {
+        $specPath = tempnam(sys_get_temp_dir(), 'openapi-spec');
+
+        Artisan::call('openapi:spec', [
+            '--definition' => $definition,
+            '--output' => $specPath
+        ]);
+
+        return $specPath;
+    }
+
+    public function generate(string $generator, string $specPath, string $output): array
+    {
+        $generatorCommand = new Command('openapi-generator generate');
+
+        $generatorCommand
+            ->addArg('--generator-name=', $generator)
+            ->addArg('--input-spec=', $specPath)
+            ->addArg('--output=', $output);
+
+        return [
+            $generatorCommand->execute(),
+            $generatorCommand->getOutput(),
+            $generatorCommand->getError(),
+        ];
     }
 
     private function openApiGeneratorCommandExists()
