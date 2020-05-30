@@ -93,12 +93,16 @@ class OpenApiOperationBuilder
     }
 
     /**
-     * @param OpenApiResponseBuilder|JsonResource|string $response
+     * @param OpenApiResponseBuilder|JsonResource|array|string $response
      * @return $this
      * @throws \Exception
      */
     public function addResponse($response): self
     {
+        if (is_array($response)) {
+            $response = OpenApiResponseBuilder::make()->status(200)->jsonSchema(OpenApiSchemaBuilder::fromArray($response));
+        }
+
         if ($this->isJsonResource($response)) {
             $response = OpenApiResponseBuilder::make()->fromResource($response);
         }
