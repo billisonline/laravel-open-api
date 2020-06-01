@@ -93,23 +93,59 @@ class OpenApiOperationBuilder
     }
 
     /**
-     * @param OpenApiResponseBuilder|JsonResource|array|string $response
+     * @param OpenApiResponseBuilder|JsonResource|array|string $body
      * @return $this
      * @throws \Exception
      */
-    public function addResponse($response): self
+    public function successResponse($body): self
     {
-        if (is_array($response)) {
-            $response = OpenApiResponseBuilder::make()->status(200)->jsonSchema(OpenApiSchemaBuilder::fromArray($response));
-        }
+        return $this->response(200, $body);
+    }
 
-        if ($this->isJsonResource($response)) {
-            $response = OpenApiResponseBuilder::make()->fromResource($response);
-        }
+    private function findResponse(int $status): ?OpenApiResponseBuilder
+    {
+        return collect($this->responses)->first(function (OpenApiResponseBuilder $response) use ($status) {
+            return $response->getStatus() == $status;
+        });
+    }
 
-        $this->responses[] = $response;
+    public function addResponse(OpenApiResponseBuilder $response): self
+    {
+        $status = $response->getStatus();
+
+        $this->responses = (
+            collect($this->responses)
+                ->filter(function (OpenApiResponseBuilder $response) use ($status) {
+                    return $response->getStatus() != $status;
+                })
+                ->merge([$response])
+                ->all()
+        );
 
         return $this;
+    }
+
+    /**
+     * @param int $status
+     * @param OpenApiResponseBuilder|JsonResource|array|string $body
+     * @return $this
+     * @throws \Exception
+     */
+    public function response(int $status, $body): self
+    {
+        $response = $this->findResponse($status) ?: OpenApiResponseBuilder::make()->status($status);
+
+        if ($body instanceof OpenApiResponseBuilder) {
+            $response = $body->status($status);
+        } elseif (is_array($body)) {
+            $response->jsonSchema(OpenApiSchemaBuilder::fromArray($body));
+        } elseif ($this->isJsonResource($body)) {
+            $response->fromResource($body);
+        } else {
+            throw new \Exception;
+        }
+
+        return $this->addResponse($response);
     }
 
     public function fromAction(Action $action)
@@ -127,7 +163,7 @@ class OpenApiOperationBuilder
 
                     if ($responseClass = $action->responseClass()) {
                         // todo: multiple status codes
-                        $operation->addResponse(
+                        $operation->successResponse(
                             OpenApiResponseBuilder::make()->fromResponse($responseClass)
                         );
                     }

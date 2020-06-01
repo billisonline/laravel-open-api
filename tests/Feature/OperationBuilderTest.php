@@ -16,7 +16,7 @@ class OperationBuilderTest extends TestCase
     {
         $op = OpenApiOperationBuilder::make()
             ->method('get')
-            ->addResponse([
+            ->successResponse([
                 'id' => 'integer',
                 'name' => 'string',
             ]);
@@ -47,7 +47,7 @@ class OperationBuilderTest extends TestCase
     /** @test */
     public function qqq()
     {
-        $op = OpenApiOperationBuilder::make()->method('get')->addResponse(
+        $op = OpenApiOperationBuilder::make()->method('get')->successResponse(
             OpenApiResponseBuilder::make()->fromResource(PostResource::class, Post::class)
         );
 

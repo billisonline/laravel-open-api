@@ -100,4 +100,9 @@ class OpenApiResponseBuilder
             'jsonSchema'    => $this->jsonSchema->build(),
         ]);
     }
+
+    public function getStatus()
+    {
+        return $this->status;
+    }
 }
