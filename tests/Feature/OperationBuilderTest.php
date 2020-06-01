@@ -14,22 +14,12 @@ class OperationBuilderTest extends TestCase
     /** @test */
     public function zzz()
     {
-        $op = OpenApiOperationBuilder::make()->method('get')->addResponse(
-            OpenApiResponseBuilder::make()->status(200)->jsonSchema(
-                OpenApiSchemaBuilder::make()
-                    ->type('object')
-                    ->addProperty(
-                        OpenApiSchemaBuilder::make()
-                            ->name('id')
-                            ->type('integer')
-                    )
-                    ->addProperty(
-                        OpenApiSchemaBuilder::make()
-                            ->name('name')
-                            ->type('string')
-                    )
-            )
-        );
+        $op = OpenApiOperationBuilder::make()
+            ->method('get')
+            ->addResponse([
+                'id' => 'integer',
+                'name' => 'string',
+            ]);
 
         $this->assertEquals(
             [
