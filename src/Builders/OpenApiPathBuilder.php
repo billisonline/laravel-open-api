@@ -25,6 +25,11 @@ class OpenApiPathBuilder
      */
     private $operations;
 
+    /**
+     * @var OpenApiOperationBuilder
+     */
+    private $lastAddedOperation;
+
     public function __construct(?string $path=null)
     {
         $this->path = $path;
@@ -87,6 +92,8 @@ class OpenApiPathBuilder
     {
         $this->operations[] = $operation;
 
+        $this->lastAddedOperation = $operation;
+
         return $this;
     }
 
@@ -97,9 +104,9 @@ class OpenApiPathBuilder
 
     public function __call($name, $arguments)
     {
-        $operation = Arr::last($this->operations);
-
         //todo: error handling
-        $operation->{$name}(...$arguments);
+        $this->lastAddedOperation->{$name}(...$arguments);
+
+        return $this;
     }
 }

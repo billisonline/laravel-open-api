@@ -82,4 +82,9 @@ class Action
 
         return $returnType->getName();
     }
+
+    public function isPlural(): bool
+    {
+        return $this->actionMethod() == 'index'; //todo
+    }
 }

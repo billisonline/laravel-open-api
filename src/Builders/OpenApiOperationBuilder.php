@@ -12,6 +12,9 @@ use Illuminate\Http\Resources\Json\JsonResource as LaravelJsonResource;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Tappable;
 
+/**
+ * @mixin OpenApiResponseBuilder
+ */
 class OpenApiOperationBuilder
 {
     use Tappable, StaticallyConstructible;
@@ -45,6 +48,16 @@ class OpenApiOperationBuilder
      * @var string
      */
     private $operationId;
+
+    /**
+     * @var Action
+     */
+    private $action;
+
+    /**
+     * @var OpenApiResponseBuilder
+     */
+    private $lastAddedResponse;
 
     public function method(string $method): self
     {
@@ -122,6 +135,8 @@ class OpenApiOperationBuilder
                 ->all()
         );
 
+        $this->lastAddedResponse = $response;
+
         return $this;
     }
 
@@ -141,6 +156,8 @@ class OpenApiOperationBuilder
             $response->jsonSchema(OpenApiSchemaBuilder::fromArray($body));
         } elseif ($this->isJsonResource($body)) {
             $response->fromResource($body);
+
+            if ($this->action->isPlural()) {$response->plural();}
         } else {
             throw new \Exception;
         }
@@ -150,6 +167,8 @@ class OpenApiOperationBuilder
 
     public function fromAction(Action $action)
     {
+        $this->action = $action;
+
         return (
             $this
                 ->method($action->httpMethod())
@@ -201,13 +220,16 @@ class OpenApiOperationBuilder
     {
         [$verb, $noun] = [$action->actionMethod(), $action->objectName()];
 
-        if ($this->isActionPlural($verb)) {$noun = Str::plural($noun);}
+        if ($this->action->isPlural()) {$noun = Str::plural($noun);}
 
         return Str::camel("{$verb} {$noun}");
     }
 
-    private function isActionPlural(string $verb): bool
+    public function __call($name, $arguments)
     {
-        return in_array($verb, ['index']); //todo
+        //todo: error handling
+        $this->lastAddedResponse->{$name}(...$arguments);
+
+        return $this;
     }
 }

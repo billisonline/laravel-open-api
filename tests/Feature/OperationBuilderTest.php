@@ -48,7 +48,7 @@ class OperationBuilderTest extends TestCase
     public function qqq()
     {
         $op = OpenApiOperationBuilder::make()->method('get')->successResponse(
-            OpenApiResponseBuilder::make()->fromResource(PostResource::class, Post::class)
+            OpenApiResponseBuilder::make()->fromResource(PostResource::class)
         );
 
         $this->assertEquals(
@@ -67,6 +67,43 @@ class OperationBuilderTest extends TestCase
                                             'nullable' => true,
                                         ],
                                         'headlineSlug' => ['type' => 'string'],
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            $op->build()->toArray()
+        );
+    }
+
+    /** @test */
+    public function plural()
+    {
+        $op = OpenApiOperationBuilder::make()->method('get')->successResponse(
+            OpenApiResponseBuilder::make()->fromResource(PostResource::class)->plural()
+        );
+
+        $this->assertEquals(
+            [
+                'responses' => [
+                    200 => [
+                        'description' => 'Success',
+                        'content' => [
+                            'application/json' => [
+                                'schema' => [
+                                    'type' => 'array',
+                                    'items' => [
+                                        'type' => 'object',
+                                        'properties' => [
+                                            'id' => ['type' => 'integer'],
+                                            'body' => [
+                                                'type' => 'string',
+                                                'nullable' => true,
+                                            ],
+                                            'headlineSlug' => ['type' => 'string'],
+                                        ]
                                     ]
                                 ]
                             ]

@@ -24,6 +24,18 @@ class OpenApiResponseBuilder
     private $description = 'Success'; //todo
 
     /**
+     * @var OpenApiDefinitionBuilder
+     */
+    private $currentDefinition;
+
+    private $isPlural = false;
+
+    public function __construct()
+    {
+        $this->currentDefinition = OpenApiDefinitionBuilder::getCurrent();
+    }
+
+    /**
      * @param JsonResource|string $resource
      * @return $this
      * @throws \Exception
@@ -56,6 +68,13 @@ class OpenApiResponseBuilder
         return $this->jsonSchema($schema);
     }
 
+    public function plural()
+    {
+        $this->isPlural = true;
+
+        return $this;
+    }
+
     public function fromResponse(string $response, int $status=200): self
     {
         $this->status($status);
@@ -78,15 +97,15 @@ class OpenApiResponseBuilder
 
     public function jsonSchema(OpenApiSchemaBuilder $jsonSchema): self
     {
-        $this->jsonSchema = $this->wrap($jsonSchema);
+        $this->jsonSchema = $jsonSchema;
         
         return $this;
     }
 
     protected function wrap(OpenApiSchemaBuilder $schema): OpenApiSchemaBuilder
     {
-        if ($definition = OpenApiDefinitionBuilder::getCurrent()) {
-            $schema = $definition->wrapResponseSchema($schema);
+        if ($this->currentDefinition) {
+            $schema = $this->currentDefinition->wrapResponseSchema($schema);
         }
 
         return $schema;
@@ -97,12 +116,17 @@ class OpenApiResponseBuilder
         return new OpenApiResponse([
             'status'        => $this->status,
             'description'   => $this->description,
-            'jsonSchema'    => $this->jsonSchema->build(),
+            'jsonSchema'    => $this->wrap($this->pluralize($this->jsonSchema))->build(),
         ]);
     }
 
     public function getStatus()
     {
         return $this->status;
+    }
+
+    private function pluralize(OpenApiSchemaBuilder $schema): OpenApiSchemaBuilder
+    {
+        return $this->isPlural? OpenApiSchemaBuilder::make()->type('array')->items($schema) : $schema;
     }
 }
