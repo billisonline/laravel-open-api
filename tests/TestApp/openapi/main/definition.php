@@ -14,11 +14,11 @@ OpenApiDefinitionBuilder::getCurrent()
 
 OpenApiInfoBuilder::make()->title('test')->version('1.0');
 
-OpenApiPathBuilder::make()->fromAction([PostController::class, 'index']);
-OpenApiPathBuilder::make()->fromAction([PostController::class, 'show'], function (OpenApiOperationBuilder $operation) {
+OpenApiPathBuilder::make()->action([PostController::class, 'index']);
+OpenApiPathBuilder::make()->action([PostController::class, 'show'], function (OpenApiOperationBuilder $operation) {
     $operation->successResponse(OpenApiResponseBuilder::make()->fromResource(Post::class));
 });
-OpenApiPathBuilder::make()->fromAction([PostController::class, 'store'])
+OpenApiPathBuilder::make()->action([PostController::class, 'store'])
     ->request([
         'title' => 'string',
         'body' => 'string',

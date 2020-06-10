@@ -78,7 +78,7 @@ class DefinitionBuilderTest extends TestCase
                         'expiresAt' => 'string',
                     ]);
 
-                OpenApiPathBuilder::make()->fromAction([UserController::class, 'authenticate']);
+                OpenApiPathBuilder::make()->action([UserController::class, 'authenticate']);
             },
             'paths./api/users/authenticate.post.responses.200.content.application/json.schema',
             [

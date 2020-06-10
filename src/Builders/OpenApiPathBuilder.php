@@ -44,7 +44,7 @@ class OpenApiPathBuilder
      * @param callable|null $tapOperation
      * @return $this
      */
-    public function fromAction($action, ?callable $tapOperation=null): self
+    public function action($action, ?callable $tapOperation=null): self
     {
         if (is_array($action) || is_string($action)) {
             $action = Action::fromName($action);
