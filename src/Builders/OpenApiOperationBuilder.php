@@ -81,7 +81,7 @@ class OpenApiOperationBuilder
             'method' => $this->method,
             'operationId' => $this->operationId,
             'description' => $this->description,
-            'parameters' => collect($this->parameters)->when()->map->build()->all(),
+            'parameters' => collect($this->parameters)->map->build()->all(),
             'requestBody' => optional($this->request)->build(),
             'responses' => collect($this->responses)->map->build()->all(),
         ]);
@@ -216,6 +216,20 @@ class OpenApiOperationBuilder
         }
 
         $this->request = $request;
+
+        return $this;
+    }
+
+    public function query(array $params): self
+    {
+        foreach ($params as $name => $type) {
+            $this->parameters[] = (
+                OpenApiParameterBuilder::make()
+                    ->name($name)
+                    ->type($type)
+                    ->inQuery()
+            );
+        }
 
         return $this;
     }

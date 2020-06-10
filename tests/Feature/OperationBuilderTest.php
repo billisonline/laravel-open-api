@@ -12,6 +12,37 @@ use TestApp\Post;
 class OperationBuilderTest extends TestCase
 {
     /** @test */
+    public function query()
+    {
+        $op = OpenApiOperationBuilder::make()
+            ->method('get')
+            ->query([
+                'foo' => 'string',
+                'bar' => 'boolean',
+            ]);
+
+        $this->assertEquals(
+            [
+                'parameters' => [
+                    [
+                        'name' => 'foo',
+                        'in' => 'query',
+                        'required' => false,
+                        'schema' => ['type' => 'string'],
+                    ],
+                    [
+                        'name' => 'bar',
+                        'in' => 'query',
+                        'required' => false,
+                        'schema' => ['type' => 'boolean'],
+                    ],
+                ]
+            ],
+            $op->build()->toArray()
+        );
+    }
+
+    /** @test */
     public function zzz()
     {
         $op = OpenApiOperationBuilder::make()

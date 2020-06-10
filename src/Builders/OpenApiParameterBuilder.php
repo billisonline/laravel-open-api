@@ -27,9 +27,21 @@ class OpenApiParameterBuilder
      */
     private $description;
 
+    /**
+     * @var OpenApiSchemaBuilder
+     */
+    private $schema;
+
     public function name(string $name)
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function type(string $type): self
+    {
+        $this->schema = OpenApiSchemaBuilder::make()->type($type);
 
         return $this;
     }
@@ -41,12 +53,20 @@ class OpenApiParameterBuilder
         return $this;
     }
 
+    public function inQuery()
+    {
+        $this->in = 'query';
+
+        return $this;
+    }
+
     public function build()
     {
         return new OpenApiParameter([
-            'name' => $this->name,
-            'in' => $this->in,
-            'description' => $this->description,
+            'name'          => $this->name,
+            'in'            => $this->in,
+            'schema'        => optional($this->schema)->build(),
+            'description'   => $this->description,
         ]);
     }
 
