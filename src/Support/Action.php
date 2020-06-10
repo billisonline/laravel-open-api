@@ -2,6 +2,7 @@
 
 namespace BYanelli\OpenApiLaravel\Support;
 
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Routing\Route as IlluminateRoute;
 use Spatie\Regex\Regex;
 
@@ -86,5 +87,28 @@ class Action
     public function isPlural(): bool
     {
         return $this->actionMethod() == 'index'; //todo
+    }
+
+    public function formRequestClass(): ?string
+    {
+        $method = new \ReflectionMethod($this->controller(), $this->actionMethod());
+
+        foreach ($method->getParameters() as $parameter) {
+            if (is_null($type = $parameter->getType())) {
+                continue;
+            }
+
+            if (!($type instanceof \ReflectionNamedType)) {
+                continue;
+            }
+
+            $className = $type->getName();
+
+            if (is_subclass_of($className, FormRequest::class)) {
+                return $className;
+            }
+        }
+
+        return null;
     }
 }

@@ -7,7 +7,9 @@ use BYanelli\OpenApiLaravel\OpenApiParameter;
 use BYanelli\OpenApiLaravel\OpenApiRequestBody;
 use BYanelli\OpenApiLaravel\OpenApiResponse;
 use BYanelli\OpenApiLaravel\Support\Action;
+use BYanelli\OpenApiLaravel\Support\FormRequestProperties;
 use BYanelli\OpenApiLaravel\Support\JsonResource;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Resources\Json\JsonResource as LaravelJsonResource;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Tappable;
@@ -79,7 +81,7 @@ class OpenApiOperationBuilder
             'method' => $this->method,
             'operationId' => $this->operationId,
             'description' => $this->description,
-            'parameters' => collect($this->parameters)->map->build()->all(),
+            'parameters' => collect($this->parameters)->when()->map->build()->all(),
             'requestBody' => optional($this->request)->build(),
             'responses' => collect($this->responses)->map->build()->all(),
         ]);
@@ -186,16 +188,25 @@ class OpenApiOperationBuilder
                             OpenApiResponseBuilder::make()->fromResponse($responseClass)
                         );
                     }
+
+                    if ($requestClass = $action->formRequestClass()) {
+                        $operation->request($requestClass);
+                    }
                 })
         );
     }
 
     /**
-     * @param OpenApiRequestBodyBuilder|OpenApiSchemaBuilder|array $request
+     * @param OpenApiRequestBodyBuilder|OpenApiSchemaBuilder|array|string $request
      * @return $this
      */
     public function request($request): self
     {
+        //todo: test
+        if ($this->isFormRequest($request)) {
+            $request = FormRequestProperties::for($request)->schema();
+        }
+
         if (is_array($request)) {
             $request = OpenApiSchemaBuilder::fromArray($request);
         }
@@ -231,5 +242,10 @@ class OpenApiOperationBuilder
         $this->lastAddedResponse->{$name}(...$arguments);
 
         return $this;
+    }
+
+    private function isFormRequest($request): bool
+    {
+        return is_string($request) && is_subclass_of($request, FormRequest::class);
     }
 }
