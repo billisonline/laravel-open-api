@@ -114,7 +114,7 @@ class DefinitionBuilderTest extends TestCase
                         'userLastName'  => 'string',
                     ]);
 
-                OpenApiResponseBuilder::make()->fromResource(AlternateUserResource::class);
+                OpenApiPathBuilder::make()->path('/user')->get()->successResponse(AlternateUserResource::class);
             },
             'components.schemas.AlternateUserResource',
             [

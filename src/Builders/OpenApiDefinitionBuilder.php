@@ -3,12 +3,14 @@
 namespace BYanelli\OpenApiLaravel\Builders;
 
 use BYanelli\OpenApiLaravel\OpenApiDefinition;
-use BYanelli\OpenApiLaravel\Support\JsonResource;
+use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Tappable;
 
 class OpenApiDefinitionBuilder
 {
     use Tappable, StaticallyConstructible;
+
+    const COMPONENT_TYPE_SCHEMA = 'schema';
 
     /**
      * @var self|null
@@ -28,7 +30,7 @@ class OpenApiDefinitionBuilder
     /**
      * @var OpenApiSchemaBuilder[]|array
      */
-    private $resourceSchemas;
+    private $components;
 
     /**
      * @var ResponseSchemaWrapper
@@ -100,31 +102,6 @@ class OpenApiDefinitionBuilder
         return new OpenApiPathBuilder($path);
     }
 
-    public function registerResourceSchema(JsonResource $resource, OpenApiSchemaBuilder $schema): self
-    {
-        $resourceClass = $resource->resourceClass();
-
-        $schema->name(class_basename($resourceClass));
-
-        if (!isset($this->resourceSchemas[$resourceClass])) {
-            $this->resourceSchemas[$resourceClass] = $schema;
-        }
-        
-        return $this;
-    }
-
-    private function getRefPathForResource(JsonResource $resource): string
-    {
-        $name = class_basename($resource->resourceClass());
-
-        return "#/components/schemas/{$name}";
-    }
-
-    public function getSchemaRefForResource(JsonResource $resource): OpenApiSchemaBuilder
-    {
-        return OpenApiSchemaBuilder::make()->ref($this->getRefPathForResource($resource));
-    }
-
     public function findPath(string $pathToFind): ?OpenApiPathBuilder
     {
         return (
@@ -143,10 +120,41 @@ class OpenApiDefinitionBuilder
         return $this;
     }
 
+    private function validateComponentType(string $type): void
+    {
+        if (!in_array($type, [self::COMPONENT_TYPE_SCHEMA])) {
+            throw new \Exception;
+        }
+    }
+
+    public function registerComponent(ComponentizableInterface $component)
+    {
+        $this->validateComponentType($component->getComponentType());
+
+        [$type, $name, $object] = [
+            Str::plural($component->getComponentType()),
+            $component->getComponentName(),
+            $component->getComponentObject(),
+        ];
+
+        $this->components[$type][$name] = $object;
+    }
+
+    public function refPath(ComponentizableInterface $component): string
+    {
+        $this->validateComponentType($component->getComponentType());
+
+        [$type, $name] = [
+            Str::plural($component->getComponentType()),
+            $component->getComponentName(),
+        ];
+
+        return "#/components/{$type}/{$name}";
+    }
+
     public function build()
     {
-        return new OpenApiDefinition([
-            'resourceSchemas' => collect($this->resourceSchemas)->map->build()->all(),
+        $definitionParams = [
             'paths' => (
                 collect($this->paths)
                     ->filter(function (OpenApiPathBuilder $path) {
@@ -158,6 +166,11 @@ class OpenApiDefinitionBuilder
                     ->all()
             ),
             'info' => $this->info->build()
-        ]);
+        ];
+
+        // Components are registered while other objects are being built, so they must be added afterwards
+        $definitionParams['components'] = $this->components;
+
+        return new OpenApiDefinition($definitionParams);
     }
 }

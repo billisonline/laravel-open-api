@@ -54,17 +54,6 @@ class OpenApiResponseBuilder
 
         $schema = OpenApiSchemaBuilder::make()->fromResource($resource);
 
-        // If we're in a definition context
-        if ($definition = OpenApiDefinitionBuilder::getCurrent()) {
-            // Register the resource as a schema
-            $definition->registerResourceSchema($resource, $schema);
-
-            // Use the "ref" instead of the full resource definition
-            $resourceRef = $definition->getSchemaRefForResource($resource);
-
-            return $this->jsonSchema($resourceRef);
-        }
-
         return $this->jsonSchema($schema);
     }
 

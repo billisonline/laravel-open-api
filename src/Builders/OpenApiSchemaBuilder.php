@@ -10,9 +10,9 @@ use BYanelli\OpenApiLaravel\Support\JsonResource;
 use BYanelli\OpenApiLaravel\Support\Tappable;
 use Illuminate\Support\Str;
 
-class OpenApiSchemaBuilder
+class OpenApiSchemaBuilder implements ComponentizableInterface
 {
-    use StaticallyConstructible, Tappable;
+    use StaticallyConstructible, Tappable, ComponentizableTrait;
 
     /**
      * @var string
@@ -40,9 +40,16 @@ class OpenApiSchemaBuilder
     private $name = '';
 
     /**
-     * @var string
+     * @var OpenApiDefinitionBuilder|null
      */
-    private $ref = '';
+    private $currentDefinition;
+
+    public $componentType = OpenApiDefinitionBuilder::COMPONENT_TYPE_SCHEMA;
+
+    public function __construct()
+    {
+        $this->currentDefinition = OpenApiDefinitionBuilder::getCurrent();
+    }
 
     public static function fromArray(array $array): self
     {
@@ -52,7 +59,7 @@ class OpenApiSchemaBuilder
     public function fromResource(JsonResource $resource): self
     {
         if ($schema = $resource->definedProperties()->schema()) {
-            return $schema;
+            return $schema->refName($resource->refName());
         }
 
         $this->type('object');
@@ -67,6 +74,8 @@ class OpenApiSchemaBuilder
                     ->nullable($property->isConditional())
             );
         }
+
+        $this->refName($resource->refName());
 
         return $this;
     }
@@ -155,13 +164,6 @@ class OpenApiSchemaBuilder
         return $this;
     }
 
-    public function ref(string $ref): self
-    {
-        $this->ref = $ref;
-
-        return $this;
-    }
-
     public function items(OpenApiSchemaBuilder $items): self
     {
         $this->items = $items;
@@ -169,21 +171,18 @@ class OpenApiSchemaBuilder
         return $this;
     }
 
-    public function build()
+    private function inDefinitionContext(): bool
     {
-        if (!empty($this->ref) && !empty($this->name)) {
-            return new OpenApiNamedSchemaRef([
-                'name'  => $this->name,
-                'ref'   => $this->ref
-            ]);
-        }
+        return !is_null($this->currentDefinition);
+    }
 
-        if (!empty($this->ref)) {
-            return new OpenApiSchemaRef(['ref' => $this->ref]);
-        }
+    private function hasName(): bool
+    {
+        return !empty($this->name);
+    }
 
-        $type = empty($this->name) ? OpenApiSchema::class : OpenApiNamedSchema::class;
-
+    private function buildSchema(array $overrides=[]): OpenApiSchema
+    {
         $params = [
             'type'      => $this->type,
             'items'     => optional($this->items)->build(),
@@ -193,6 +192,37 @@ class OpenApiSchemaBuilder
 
         if (!empty($this->name)) {$params['name'] = $this->name;}
 
+        $params = array_merge($params, $overrides);
+
+        $type = isset($params['name']) ? OpenApiNamedSchema::class : OpenApiSchema::class;
+
         return new $type($params);
+    }
+
+    public function getComponentObject()
+    {
+        return $this->buildSchema(['componentName' => $this->componentName]);
+    }
+
+    public function build()
+    {
+        if ($this->inDefinitionContext() && $this->hasComponentName() && $this->hasName()) {
+            $this->currentDefinition->registerComponent($this);
+
+            return new OpenApiNamedSchemaRef([
+                'name'  => $this->name,
+                'ref'   => $this->currentDefinition->refPath($this),
+            ]);
+        }
+
+        if ($this->inDefinitionContext() && $this->hasComponentName()) {
+            $this->currentDefinition->registerComponent($this);
+
+            return new OpenApiSchemaRef([
+                'ref' => $this->currentDefinition->refPath($this),
+            ]);
+        }
+
+        return $this->buildSchema();
     }
 }

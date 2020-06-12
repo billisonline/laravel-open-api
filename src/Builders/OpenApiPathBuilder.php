@@ -60,6 +60,11 @@ class OpenApiPathBuilder
         );
     }
 
+    public function get()
+    {
+        return $this->addOperation(OpenApiOperationBuilder::make()->method('get'));
+    }
+
     protected function preparePath(string $path): string
     {
         if (!Str::startsWith($path, '/')) {

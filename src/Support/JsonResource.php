@@ -195,4 +195,9 @@ class JsonResource
     {
         return $this->definedProperties;
     }
+
+    public function refName(): string
+    {
+        return class_basename($this->resourceClass);
+    }
 }

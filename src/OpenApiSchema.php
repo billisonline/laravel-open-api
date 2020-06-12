@@ -38,8 +38,15 @@ class OpenApiSchema extends DataTransferObject
     /** @var \BYanelli\OpenApiLaravel\OpenApiSchema[]|array */
     public $properties = [];
 
+    /** @var string|null */
+    public $componentName;
+
     public $keyArrayBy = [
         'properties' => 'name',
+    ];
+
+    protected $exceptKeys = [
+        'componentName',
     ];
 
     public $ignoreKeysIfEmpty = [

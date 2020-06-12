@@ -21,7 +21,7 @@ class OpenApiDefinition extends DataTransferObject
     public $tags = [];
 
     /** @var \BYanelli\OpenApiLaravel\OpenApiSchema[]|array */
-    public $resourceSchemas = [];
+    public $components = [];
 
     public $keyArrayBy  = [
         'paths' => 'path',
@@ -51,16 +51,25 @@ class OpenApiDefinition extends DataTransferObject
         return $this;
     }
 
-    public function serializeResourceSchemas(array $resourceSchemas)
+    private function allToArrayKeyedByComponentName(array $dtos): array
     {
-        if (empty($resourceSchemas)) {return [];}
-
-        return ['components' => ['schemas' =>
-            collect($resourceSchemas)
-                ->keyBy(function (OpenApiNamedSchema $schema) {return $schema->name;})
-                ->map(function (OpenApiNamedSchema $schema) {return $schema->toArray();})
+        return (
+            collect($dtos)
+                ->keyBy(function ($dto) {return $dto->componentName;})
+                ->map(function ($dto) {return $dto->toArray();})
                 ->all()
-        ]];
+        );
+    }
+
+    public function serializeComponents(array $components)
+    {
+        $arr = [
+            'components' => array_filter([
+                'schemas' => $this->allToArrayKeyedByComponentName($components['schemas'] ?? []),
+            ])
+        ];
+
+        return empty($arr['components']) ? [] : $arr;
     }
 
 }

@@ -159,7 +159,7 @@ class OpenApiOperationBuilder
         } elseif ($this->isJsonResource($body)) {
             $response->fromResource($body);
 
-            if ($this->action->isPlural()) {$response->plural();}
+            if ($this->action && $this->action->isPlural()) {$response->plural();}
         } else {
             throw new \Exception;
         }
