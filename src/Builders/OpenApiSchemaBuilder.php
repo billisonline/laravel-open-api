@@ -12,7 +12,10 @@ use Illuminate\Support\Str;
 
 class OpenApiSchemaBuilder implements ComponentizableInterface
 {
-    use StaticallyConstructible, Tappable, ComponentizableTrait;
+    use StaticallyConstructible,
+        Tappable,
+        ComponentizableTrait,
+        InteractsWithCurrentDefinition;
 
     /**
      * @var string
@@ -40,15 +43,13 @@ class OpenApiSchemaBuilder implements ComponentizableInterface
     private $name = '';
 
     /**
-     * @var OpenApiDefinitionBuilder|null
+     * @var string
      */
-    private $currentDefinition;
-
     public $componentType = OpenApiDefinitionBuilder::COMPONENT_TYPE_SCHEMA;
 
     public function __construct()
     {
-        $this->currentDefinition = OpenApiDefinitionBuilder::getCurrent();
+        $this->saveCurrentDefinition();
     }
 
     public static function fromArray(array $array): self
@@ -169,11 +170,6 @@ class OpenApiSchemaBuilder implements ComponentizableInterface
         $this->items = $items;
 
         return $this;
-    }
-
-    private function inDefinitionContext(): bool
-    {
-        return !is_null($this->currentDefinition);
     }
 
     private function hasName(): bool

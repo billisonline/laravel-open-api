@@ -68,7 +68,7 @@ class DefinitionBuilderTest extends TestCase
     /** @test */
     public function specify_schema_for_response()
     {
-        $this->assertDefinitionEquals(
+        $this->assertDefinitionPartsEqual(
             function () {
                 OpenApiInfoBuilder::make()->title('title')->version('version');
 
@@ -80,12 +80,16 @@ class DefinitionBuilderTest extends TestCase
 
                 OpenApiPathBuilder::make()->action([UserController::class, 'authenticate']);
             },
-            'paths./api/users/authenticate.post.responses.200.content.application/json.schema',
             [
-                'type' => 'object',
-                'properties' => [
-                    'token'     => ['type' => 'string'],
-                    'expiresAt' => ['type' => 'string'],
+                'paths./api/users/authenticate.post.responses.200' => [
+                    '$ref' => '#/components/responses/TokenResponse'
+                ],
+                'components.responses.TokenResponse.content.application/json.schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'token'     => ['type' => 'string'],
+                        'expiresAt' => ['type' => 'string'],
+                    ]
                 ]
             ]
         );
@@ -98,6 +102,17 @@ class DefinitionBuilderTest extends TestCase
         $result = Arr::get($definition->build()->toArray(), $path);
 
         $this->assertEquals($expected, $result);
+    }
+
+    protected function assertDefinitionPartsEqual(callable $definition, array $expectedParts)
+    {
+        $definition = OpenApiDefinitionBuilder::with($definition);
+
+        $result = $definition->build()->toArray();
+
+        foreach ($expectedParts as $path => $expected) {
+            $this->assertEquals($expected, Arr::get($result, $path));
+        }
     }
 
     /** @test */

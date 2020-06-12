@@ -11,6 +11,7 @@ class OpenApiDefinitionBuilder
     use Tappable, StaticallyConstructible;
 
     const COMPONENT_TYPE_SCHEMA = 'schema';
+    const COMPONENT_TYPE_RESPONSE = 'response';
 
     /**
      * @var self|null
@@ -122,7 +123,7 @@ class OpenApiDefinitionBuilder
 
     private function validateComponentType(string $type): void
     {
-        if (!in_array($type, [self::COMPONENT_TYPE_SCHEMA])) {
+        if (!in_array($type, [self::COMPONENT_TYPE_SCHEMA, self::COMPONENT_TYPE_RESPONSE])) {
             throw new \Exception;
         }
     }

@@ -66,6 +66,7 @@ class OpenApiDefinition extends DataTransferObject
         $arr = [
             'components' => array_filter([
                 'schemas' => $this->allToArrayKeyedByComponentName($components['schemas'] ?? []),
+                'responses' => $this->allToArrayKeyedByComponentName($components['responses'] ?? []),
             ])
         ];
 
