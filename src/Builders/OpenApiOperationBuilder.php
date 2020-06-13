@@ -154,8 +154,10 @@ class OpenApiOperationBuilder
 
         if ($body instanceof OpenApiResponseBuilder) {
             $response = $body->status($status);
-        } elseif (is_array($body)) {
+        } elseif (is_array($body) && !empty($body)) {
             $response->jsonSchema(OpenApiSchemaBuilder::fromArray($body));
+        } elseif (is_array($body) && empty($body)) {
+            //
         } elseif ($this->isJsonResource($body)) {
             $response->fromResource($body);
 
@@ -165,6 +167,11 @@ class OpenApiOperationBuilder
         }
 
         return $this->addResponse($response);
+    }
+
+    public function emptyResponse(int $status = 200)
+    {
+        return $this->response($status, []);
     }
 
     public function fromAction(Action $action)

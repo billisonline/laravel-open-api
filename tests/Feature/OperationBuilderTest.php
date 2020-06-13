@@ -74,6 +74,24 @@ class OperationBuilderTest extends TestCase
             $op->build()->toArray()
         );
     }
+    /** @test */
+    public function empty()
+    {
+        $op = OpenApiOperationBuilder::make()
+            ->method('get')
+            ->emptyResponse();
+
+        $this->assertEquals(
+            [
+                'responses' => [
+                    200 => [
+                        'description' => 'Success',
+                    ]
+                ]
+            ],
+            $op->build()->toArray()
+        );
+    }
 
     /** @test */
     public function qqq()

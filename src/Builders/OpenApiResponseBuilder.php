@@ -118,7 +118,11 @@ class OpenApiResponseBuilder implements ComponentizableInterface
         return new OpenApiResponse(array_merge([
             'status'        => $this->status,
             'description'   => $this->description,
-            'jsonSchema'    => $this->wrap($this->pluralize($this->jsonSchema))->build(),
+            'jsonSchema'    => (
+                !is_null($this->jsonSchema)
+                    ? $this->wrap($this->pluralize($this->jsonSchema))->build()
+                    : null
+            ),
         ], $overrides));
     }
 
