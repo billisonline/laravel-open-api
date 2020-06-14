@@ -18,9 +18,9 @@ class OpenApiResponse extends DataTransferObject
     public $jsonSchema;
 
     /** @var string|null */
-    public $componentName;
+    public $componentKey;
 
-    protected $exceptKeys = ['status', 'componentName'];
+    protected $exceptKeys = ['status', 'componentKey'];
 
     public $ignoreKeysIfEmpty = ['description', 'jsonSchema'];
 

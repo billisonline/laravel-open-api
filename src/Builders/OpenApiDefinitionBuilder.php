@@ -132,25 +132,25 @@ class OpenApiDefinitionBuilder
     {
         $this->validateComponentType($component->getComponentType());
 
-        [$type, $name, $object] = [
+        [$type, $key, $object] = [
             Str::plural($component->getComponentType()),
-            $component->getComponentName(),
+            $component->getComponentKey(),
             $component->getComponentObject(),
         ];
 
-        $this->components[$type][$name] = $object;
+        $this->components[$type][$key] = $object;
     }
 
     public function refPath(ComponentizableInterface $component): string
     {
         $this->validateComponentType($component->getComponentType());
 
-        [$type, $name] = [
+        [$type, $key] = [
             Str::plural($component->getComponentType()),
-            $component->getComponentName(),
+            $component->getComponentKey(),
         ];
 
-        return "#/components/{$type}/{$name}";
+        return "#/components/{$type}/{$key}";
     }
 
     public function build()

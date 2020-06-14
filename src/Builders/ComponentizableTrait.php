@@ -10,23 +10,23 @@ trait ComponentizableTrait
     /**
      * @var string
      */
-    protected $componentName;
+    protected $componentKey;
 
-    protected function hasComponentName(): bool
+    protected function hasComponentKey(): bool
     {
-        return !empty($this->componentName);
+        return !empty($this->componentKey);
     }
 
-    public function refName(string $refName): self
+    public function componentKey(string $refName): self
     {
-        $this->componentName = $refName;
+        $this->componentKey = $refName;
 
         return $this;
     }
 
-    public function getComponentName(): string
+    public function getComponentKey(): string
     {
-        return $this->componentName;
+        return $this->componentKey;
     }
 
     public function getComponentType(): string

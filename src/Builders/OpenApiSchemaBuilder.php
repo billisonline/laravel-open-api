@@ -54,7 +54,7 @@ class OpenApiSchemaBuilder implements ComponentizableInterface
 
     public function component(string $name, array $body=[]): self
     {
-        $this->componentName = $name;
+        $this->componentKey = $name;
 
         if ($body) {$this->object($body);}
 
@@ -69,7 +69,7 @@ class OpenApiSchemaBuilder implements ComponentizableInterface
     public function fromResource(JsonResource $resource): self
     {
         if ($schema = $resource->definedProperties()->schema()) {
-            return $schema->refName($resource->refName());
+            return $schema->componentKey($resource->componentKey());
         }
 
         $this->type('object');
@@ -85,7 +85,7 @@ class OpenApiSchemaBuilder implements ComponentizableInterface
             );
         }
 
-        $this->refName($resource->refName());
+        $this->componentKey($resource->componentKey());
 
         return $this;
     }
@@ -206,12 +206,12 @@ class OpenApiSchemaBuilder implements ComponentizableInterface
 
     public function getComponentObject()
     {
-        return $this->buildSchema(['componentName' => $this->componentName]);
+        return $this->buildSchema(['componentKey' => $this->componentKey]);
     }
 
     public function build()
     {
-        if ($this->inDefinitionContext() && $this->hasComponentName() && $this->hasName()) {
+        if ($this->inDefinitionContext() && $this->hasComponentKey() && $this->hasName()) {
             $this->currentDefinition->registerComponent($this);
 
             return new OpenApiNamedSchemaRef([
@@ -220,7 +220,7 @@ class OpenApiSchemaBuilder implements ComponentizableInterface
             ]);
         }
 
-        if ($this->inDefinitionContext() && $this->hasComponentName()) {
+        if ($this->inDefinitionContext() && $this->hasComponentKey()) {
             $this->currentDefinition->registerComponent($this);
 
             return new OpenApiSchemaRef([

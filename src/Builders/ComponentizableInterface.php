@@ -6,7 +6,7 @@ interface ComponentizableInterface
 {
     public function getComponentType(): string;
 
-    public function getComponentName(): string;
+    public function getComponentKey(): string;
 
     public function getComponentObject();
 }

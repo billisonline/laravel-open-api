@@ -80,7 +80,7 @@ class OpenApiResponseBuilder implements ComponentizableInterface
             $this->jsonSchema($schema);
         }
 
-        $this->componentName = class_basename($response);
+        $this->componentKey = class_basename($response);
 
         return $this;
     }
@@ -110,7 +110,7 @@ class OpenApiResponseBuilder implements ComponentizableInterface
 
     public function getComponentObject()
     {
-        return $this->buildSchema(['componentName' => $this->componentName]);
+        return $this->buildSchema(['componentKey' => $this->componentKey]);
     }
 
     private function buildSchema(array $overrides=[])
@@ -128,7 +128,7 @@ class OpenApiResponseBuilder implements ComponentizableInterface
 
     public function build()
     {
-        if ($this->inDefinitionContext() && $this->hasComponentName()) {
+        if ($this->inDefinitionContext() && $this->hasComponentKey()) {
             $this->currentDefinition->registerComponent($this);
 
             return new OpenApiResponseRef([

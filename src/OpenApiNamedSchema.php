@@ -7,5 +7,5 @@ class OpenApiNamedSchema extends OpenApiSchema
     /** @var string */
     public $name;
 
-    protected $exceptKeys = ['name', 'componentName'];
+    protected $exceptKeys = ['name', 'componentKey'];
 }

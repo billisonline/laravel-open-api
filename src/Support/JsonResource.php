@@ -196,7 +196,7 @@ class JsonResource
         return $this->definedProperties;
     }
 
-    public function refName(): string
+    public function componentKey(): string
     {
         return class_basename($this->resourceClass);
     }

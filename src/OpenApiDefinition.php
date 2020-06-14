@@ -51,11 +51,11 @@ class OpenApiDefinition extends DataTransferObject
         return $this;
     }
 
-    private function allToArrayKeyedByComponentName(array $dtos): array
+    private function allToArrayKeyedBycomponentKey(array $dtos): array
     {
         return (
             collect($dtos)
-                ->keyBy(function ($dto) {return $dto->componentName;})
+                ->keyBy(function ($dto) {return $dto->componentKey;})
                 ->map(function ($dto) {return $dto->toArray();})
                 ->all()
         );
@@ -65,8 +65,8 @@ class OpenApiDefinition extends DataTransferObject
     {
         $arr = [
             'components' => array_filter([
-                'schemas' => $this->allToArrayKeyedByComponentName($components['schemas'] ?? []),
-                'responses' => $this->allToArrayKeyedByComponentName($components['responses'] ?? []),
+                'schemas' => $this->allToArrayKeyedBycomponentKey($components['schemas'] ?? []),
+                'responses' => $this->allToArrayKeyedBycomponentKey($components['responses'] ?? []),
             ])
         ];
 

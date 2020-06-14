@@ -41,14 +41,14 @@ class OpenApiSchema extends DataTransferObject
     public $properties = [];
 
     /** @var string|null */
-    public $componentName;
+    public $componentKey;
 
     public $keyArrayBy = [
         'properties' => 'name',
     ];
 
     protected $exceptKeys = [
-        'componentName',
+        'componentKey',
     ];
 
     public $ignoreKeysIfEmpty = [
@@ -72,8 +72,8 @@ class OpenApiSchema extends DataTransferObject
     {
         //todo: this sucks
         return tap($this->_toArray(), function (&$arr) {
-            if ($this->componentName) {
-                $arr['title'] = $this->componentName;
+            if ($this->componentKey) {
+                $arr['title'] = $this->componentKey;
             }
         });
     }
