@@ -154,6 +154,8 @@ class OpenApiOperationBuilder
 
         if ($body instanceof OpenApiResponseBuilder) {
             $response = $body->status($status);
+        } elseif ($body instanceof OpenApiSchemaBuilder) {
+            $response = OpenApiResponseBuilder::make()->status($status)->jsonSchema($body);
         } elseif (is_array($body) && !empty($body)) {
             $response->jsonSchema(OpenApiSchemaBuilder::fromArray($body));
         } elseif (is_array($body) && empty($body)) {

@@ -75,6 +75,7 @@ class ConsoleCommandTest extends TestCase
                     'components' => [
                         'schemas' => [
                             'Post' => [
+                                'title' => 'Post',
                                 'type' => 'object',
                                 'properties' => [
                                     'id' => [

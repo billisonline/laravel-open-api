@@ -52,6 +52,15 @@ class OpenApiSchemaBuilder implements ComponentizableInterface
         $this->saveCurrentDefinition();
     }
 
+    public function component(string $name, array $body=[]): self
+    {
+        $this->componentName = $name;
+
+        if ($body) {$this->object($body);}
+
+        return $this;
+    }
+
     public static function fromArray(array $array): self
     {
         return (new static)->object($array);

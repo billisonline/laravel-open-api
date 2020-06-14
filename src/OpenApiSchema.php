@@ -6,7 +6,9 @@ use Spatie\DataTransferObject\DataTransferObject;
 
 class OpenApiSchema extends DataTransferObject
 {
-    use DtoSerializationOptions;
+    use DtoSerializationOptions {
+        toArray as _toArray;
+    }
 
     /** @var string */
     public $type;
@@ -64,5 +66,15 @@ class OpenApiSchema extends DataTransferObject
     protected function validateType(string $type)
     {
         return in_array($type, ['string', 'number', 'integer', 'boolean', 'array', 'object']);
+    }
+
+    public function toArray(): array
+    {
+        //todo: this sucks
+        return tap($this->_toArray(), function (&$arr) {
+            if ($this->componentName) {
+                $arr['title'] = $this->componentName;
+            }
+        });
     }
 }
