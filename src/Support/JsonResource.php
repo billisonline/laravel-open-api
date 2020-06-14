@@ -200,4 +200,9 @@ class JsonResource
     {
         return class_basename($this->resourceClass);
     }
+
+    public function componentTitle(): string
+    {
+        return preg_replace('/Resource$/', '', class_basename($this->resourceClass));
+    }
 }

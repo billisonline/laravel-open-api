@@ -43,6 +43,9 @@ class OpenApiSchema extends DataTransferObject
     /** @var string|null */
     public $componentKey;
 
+    /** @var string|null */
+    public $componentTitle;
+
     public $keyArrayBy = [
         'properties' => 'name',
     ];
@@ -60,21 +63,16 @@ class OpenApiSchema extends DataTransferObject
         'pattern',
         'nullable',
         'items',
-        'properties'
+        'properties',
+        'componentTitle',
+    ];
+
+    public $applyKeys = [
+        'componentTitle' => 'title',
     ];
 
     protected function validateType(string $type)
     {
         return in_array($type, ['string', 'number', 'integer', 'boolean', 'array', 'object']);
-    }
-
-    public function toArray(): array
-    {
-        //todo: this sucks
-        return tap($this->_toArray(), function (&$arr) {
-            if ($this->componentKey) {
-                $arr['title'] = $this->componentKey;
-            }
-        });
     }
 }

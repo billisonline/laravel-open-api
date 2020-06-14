@@ -12,14 +12,26 @@ trait ComponentizableTrait
      */
     protected $componentKey;
 
+    /**
+     * @var string
+     */
+    protected $componentTitle;
+
     protected function hasComponentKey(): bool
     {
         return !empty($this->componentKey);
     }
 
-    public function componentKey(string $refName): self
+    public function componentKey(string $componentKey): self
     {
-        $this->componentKey = $refName;
+        $this->componentKey = $componentKey;
+
+        return $this;
+    }
+
+    protected function componentTitle(string $componentTitle): self
+    {
+        $this->componentTitle = $componentTitle;
 
         return $this;
     }
@@ -27,6 +39,11 @@ trait ComponentizableTrait
     public function getComponentKey(): string
     {
         return $this->componentKey;
+    }
+
+    protected function getComponentTitle(): string
+    {
+        return $this->componentTitle;
     }
 
     public function getComponentType(): string

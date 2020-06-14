@@ -69,7 +69,7 @@ class OpenApiSchemaBuilder implements ComponentizableInterface
     public function fromResource(JsonResource $resource): self
     {
         if ($schema = $resource->definedProperties()->schema()) {
-            return $schema->componentKey($resource->componentKey());
+            return $schema->componentKey($resource->componentKey())->componentTitle($resource->componentTitle());
         }
 
         $this->type('object');
@@ -85,7 +85,7 @@ class OpenApiSchemaBuilder implements ComponentizableInterface
             );
         }
 
-        $this->componentKey($resource->componentKey());
+        $this->componentKey($resource->componentKey())->componentTitle($resource->componentTitle());
 
         return $this;
     }
@@ -206,7 +206,10 @@ class OpenApiSchemaBuilder implements ComponentizableInterface
 
     public function getComponentObject()
     {
-        return $this->buildSchema(['componentKey' => $this->componentKey]);
+        return $this->buildSchema([
+            'componentKey'      => $this->componentKey,
+            'componentTitle'    => $this->componentTitle,
+        ]);
     }
 
     public function build()

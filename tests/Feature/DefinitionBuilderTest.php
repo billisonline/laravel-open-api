@@ -139,7 +139,7 @@ class DefinitionBuilderTest extends TestCase
                     'userFirstName' => ['type' => 'string'],
                     'userLastName'  => ['type' => 'string'],
                 ],
-                'title' => 'AlternateUserResource',
+                'title' => 'AlternateUser',
             ]
         );
     }
