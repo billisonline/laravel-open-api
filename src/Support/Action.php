@@ -4,6 +4,7 @@ namespace BYanelli\OpenApiLaravel\Support;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Routing\Route as IlluminateRoute;
+use Illuminate\Support\Str;
 use Spatie\Regex\Regex;
 
 class Action
@@ -110,5 +111,15 @@ class Action
         }
 
         return null;
+    }
+
+    public function requestComponentKey()
+    {
+        return $this->requestComponentName();
+    }
+
+    public function requestComponentName()
+    {
+        return Str::studly($this->actionMethod().'Request');
     }
 }

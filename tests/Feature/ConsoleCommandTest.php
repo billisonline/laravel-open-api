@@ -26,11 +26,7 @@ class ConsoleCommandTest extends TestCase
                                     'content' => [
                                         'application/json' => [
                                             'schema' => [
-                                                'type' => 'object',
-                                                'properties' => [
-                                                    'title' => ['type' => 'string'],
-                                                    'body' => ['type' => 'string'],
-                                                ]
+                                                '$ref' => '#/components/schemas/StoreRequest'
                                             ]
                                         ]
                                     ]
@@ -74,6 +70,14 @@ class ConsoleCommandTest extends TestCase
                     ],
                     'components' => [
                         'schemas' => [
+                            'StoreRequest' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'title' => ['type' => 'string'],
+                                    'body' => ['type' => 'string'],
+                                ],
+                                'title' => 'StoreRequest',
+                            ],
                             'Post' => [
                                 'title' => 'Post',
                                 'type' => 'object',

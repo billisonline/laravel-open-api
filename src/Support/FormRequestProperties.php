@@ -39,6 +39,10 @@ class FormRequestProperties
 
     public function schema(): ?OpenApiSchemaBuilder
     {
-        return $this->schema;
+        if ($this->schema) {
+            return clone $this->schema;
+        }
+
+        return null;
     }
 }

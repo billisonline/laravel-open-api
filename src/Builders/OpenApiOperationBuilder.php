@@ -7,9 +7,9 @@ use BYanelli\OpenApiLaravel\OpenApiParameter;
 use BYanelli\OpenApiLaravel\OpenApiRequestBody;
 use BYanelli\OpenApiLaravel\OpenApiResponse;
 use BYanelli\OpenApiLaravel\Support\Action;
+use BYanelli\OpenApiLaravel\Support\FormRequest;
 use BYanelli\OpenApiLaravel\Support\FormRequestProperties;
 use BYanelli\OpenApiLaravel\Support\JsonResource;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Resources\Json\JsonResource as LaravelJsonResource;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Tappable;
@@ -213,7 +213,16 @@ class OpenApiOperationBuilder
     {
         //todo: test
         if ($this->isFormRequest($request)) {
-            $request = FormRequestProperties::for($request)->schema();
+            $formRequest = new FormRequest($request);
+
+            if ($formRequest->hasSchema()) {
+                $request = (
+                    $formRequest
+                        ->schema()
+                        ->setComponentKey($formRequest->componentKey())
+                        ->setComponentTitle($formRequest->componentTitle())
+                );
+            }
         }
 
         if (is_array($request)) {
@@ -221,6 +230,12 @@ class OpenApiOperationBuilder
         }
 
         if ($request instanceof OpenApiSchemaBuilder) {
+            if (!$request->hasComponentKeyAndTitle() && $this->action) {
+                $request
+                    ->setComponentKey($this->action->requestComponentKey())
+                    ->setComponentTitle($this->action->requestComponentName());
+            }
+
             $request = OpenApiRequestBodyBuilder::make()->jsonSchema($request);
         }
 

@@ -47,14 +47,37 @@ class OpenApiSchemaBuilder implements ComponentizableInterface
      */
     public $componentType = OpenApiDefinitionBuilder::COMPONENT_TYPE_SCHEMA;
 
+    public static function asComponent(string $name, array $body=[]): self
+    {
+        return static::make()->component($name, $body);
+    }
+
     public function __construct()
     {
         $this->saveCurrentDefinition();
     }
 
-    public function component(string $name, array $body=[]): self
+    public function setComponentKey(string $componentKey): self
     {
-        $this->componentKey = $name;
+        $this->componentKey = $componentKey;
+
+        return $this;
+    }
+
+    public function setComponentTitle(string $componentTitle): self
+    {
+        $this->componentTitle = $componentTitle;
+
+        return $this;
+    }
+
+    public function component($name, array $body=[]): self
+    {
+        if (is_array($name)) {
+            [$this->componentKey, $this->componentTitle] = $name;
+        } elseif (is_string($name)) {
+            [$this->componentKey, $this->componentTitle] = [$name, $name];
+        }
 
         if ($body) {$this->object($body);}
 

@@ -50,4 +50,9 @@ trait ComponentizableTrait
     {
         return $this->componentType;
     }
+
+    public function hasComponentKeyAndTitle(): bool
+    {
+        return !empty($this->componentKey) && !empty($this->componentTitle);
+    }
 }
