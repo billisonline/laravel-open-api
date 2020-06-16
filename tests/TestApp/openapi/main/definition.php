@@ -16,7 +16,7 @@ OpenApiInfoBuilder::make()->title('test')->version('1.0');
 
 OpenApiPathBuilder::make()->action([PostController::class, 'index']);
 OpenApiPathBuilder::make()->action([PostController::class, 'show'], function (OpenApiOperationBuilder $operation) {
-    $operation->successResponse(OpenApiResponseBuilder::make()->fromResource(Post::class));
+    $operation->response(OpenApiResponseBuilder::make()->fromResource(Post::class));
 });
 OpenApiPathBuilder::make()->action([PostController::class, 'store'])
     ->request([

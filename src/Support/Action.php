@@ -113,13 +113,23 @@ class Action
         return null;
     }
 
-    public function requestComponentKey()
+    public function requestComponentKey(): string
     {
-        return $this->requestComponentName();
+        return $this->requestComponentTitle();
     }
 
-    public function requestComponentName()
+    public function requestComponentTitle(): string
     {
         return Str::studly($this->actionMethod().'Request');
+    }
+
+    public function responseComponentKey(): string
+    {
+        return $this->responseComponentTitle();
+    }
+
+    public function responseComponentTitle(): string
+    {
+        return Str::studly($this->actionMethod().'Response');
     }
 }

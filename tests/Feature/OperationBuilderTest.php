@@ -47,7 +47,7 @@ class OperationBuilderTest extends TestCase
     {
         $op = OpenApiOperationBuilder::make()
             ->method('get')
-            ->successResponse([
+            ->response([
                 'id' => 'integer',
                 'name' => 'string',
             ]);
@@ -96,7 +96,7 @@ class OperationBuilderTest extends TestCase
     /** @test */
     public function qqq()
     {
-        $op = OpenApiOperationBuilder::make()->method('get')->successResponse(
+        $op = OpenApiOperationBuilder::make()->method('get')->response(
             OpenApiResponseBuilder::make()->fromResource(PostResource::class)
         );
 
@@ -130,7 +130,7 @@ class OperationBuilderTest extends TestCase
     /** @test */
     public function plural()
     {
-        $op = OpenApiOperationBuilder::make()->method('get')->successResponse(
+        $op = OpenApiOperationBuilder::make()->method('get')->response(
             OpenApiResponseBuilder::make()->fromResource(PostResource::class)->plural()
         );
 

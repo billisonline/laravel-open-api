@@ -8,7 +8,6 @@ use BYanelli\OpenApiLaravel\OpenApiRequestBody;
 use BYanelli\OpenApiLaravel\OpenApiResponse;
 use BYanelli\OpenApiLaravel\Support\Action;
 use BYanelli\OpenApiLaravel\Support\FormRequest;
-use BYanelli\OpenApiLaravel\Support\FormRequestProperties;
 use BYanelli\OpenApiLaravel\Support\JsonResource;
 use Illuminate\Http\Resources\Json\JsonResource as LaravelJsonResource;
 use Illuminate\Support\Str;
@@ -107,16 +106,6 @@ class OpenApiOperationBuilder
         return false;
     }
 
-    /**
-     * @param OpenApiResponseBuilder|JsonResource|array|string $body
-     * @return $this
-     * @throws \Exception
-     */
-    public function successResponse($body): self
-    {
-        return $this->response(200, $body);
-    }
-
     private function findResponse(int $status): ?OpenApiResponseBuilder
     {
         return collect($this->responses)->first(function (OpenApiResponseBuilder $response) use ($status) {
@@ -143,13 +132,19 @@ class OpenApiOperationBuilder
     }
 
     /**
-     * @param int $status
-     * @param OpenApiResponseBuilder|JsonResource|array|string $body
+     * @param int|OpenApiResponseBuilder|OpenApiSchemaBuilder|JsonResource|array|string $statusOrBody
+     * @param OpenApiResponseBuilder|OpenApiSchemaBuilder|JsonResource|array|string|null $body
      * @return $this
      * @throws \Exception
      */
-    public function response(int $status, $body): self
+    public function response($statusOrBody, $body=null): self
     {
+        if (is_null($body)) {
+            [$status, $body] = [200, $statusOrBody];
+        } else {
+            $status = $statusOrBody;
+        }
+
         $response = $this->findResponse($status) ?: OpenApiResponseBuilder::make()->status($status);
 
         if ($body instanceof OpenApiResponseBuilder) {
@@ -157,7 +152,13 @@ class OpenApiOperationBuilder
         } elseif ($body instanceof OpenApiSchemaBuilder) {
             $response = OpenApiResponseBuilder::make()->status($status)->jsonSchema($body);
         } elseif (is_array($body) && !empty($body)) {
-            $response->jsonSchema(OpenApiSchemaBuilder::fromArray($body));
+            $response->jsonSchema($schema = OpenApiSchemaBuilder::fromArray($body));
+
+            if ($this->action) {
+                $schema
+                    ->setComponentKey($this->action->responseComponentKey())
+                    ->setComponentTitle($this->action->responseComponentTitle());
+            }
         } elseif (is_array($body) && empty($body)) {
             //
         } elseif ($this->isJsonResource($body)) {
@@ -193,7 +194,7 @@ class OpenApiOperationBuilder
 
                     if ($responseClass = $action->responseClass()) {
                         // todo: multiple status codes
-                        $operation->successResponse(
+                        $operation->response(
                             OpenApiResponseBuilder::make()->fromResponse($responseClass)
                         );
                     }
@@ -233,7 +234,7 @@ class OpenApiOperationBuilder
             if (!$request->hasComponentKeyAndTitle() && $this->action) {
                 $request
                     ->setComponentKey($this->action->requestComponentKey())
-                    ->setComponentTitle($this->action->requestComponentName());
+                    ->setComponentTitle($this->action->requestComponentTitle());
             }
 
             $request = OpenApiRequestBodyBuilder::make()->jsonSchema($request);
