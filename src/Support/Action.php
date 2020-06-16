@@ -137,4 +137,14 @@ class Action
     {
         return Str::studly($this->operationId().'Response');
     }
+
+    public function tagName(): string
+    {
+        return $this->objectName();
+    }
+
+    public function tagDescription()
+    {
+        return '(tag description here)'; //todo
+    }
 }

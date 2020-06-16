@@ -3,14 +3,10 @@
 namespace BYanelli\OpenApiLaravel\Builders;
 
 use BYanelli\OpenApiLaravel\OpenApiOperation;
-use BYanelli\OpenApiLaravel\OpenApiParameter;
-use BYanelli\OpenApiLaravel\OpenApiRequestBody;
-use BYanelli\OpenApiLaravel\OpenApiResponse;
 use BYanelli\OpenApiLaravel\Support\Action;
 use BYanelli\OpenApiLaravel\Support\FormRequest;
 use BYanelli\OpenApiLaravel\Support\JsonResource;
 use Illuminate\Http\Resources\Json\JsonResource as LaravelJsonResource;
-use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Tappable;
 
 /**
@@ -18,7 +14,7 @@ use Illuminate\Support\Traits\Tappable;
  */
 class OpenApiOperationBuilder
 {
-    use Tappable, StaticallyConstructible;
+    use Tappable, StaticallyConstructible, InteractsWithCurrentDefinition;
 
     /**
      * @var string
@@ -31,17 +27,17 @@ class OpenApiOperationBuilder
     private $description = null;
 
     /**
-     * @var OpenApiParameter[]|array
+     * @var OpenApiParameterBuilder[]|array
      */
     private $parameters = [];
 
     /**
-     * @var OpenApiRequestBody|null
+     * @var OpenApiRequestBodyBuilder|null
      */
     private $request;
 
     /**
-     * @var OpenApiResponse[]|array
+     * @var OpenApiResponseBuilder[]|array
      */
     private $responses = [];
 
@@ -60,6 +56,16 @@ class OpenApiOperationBuilder
      */
     private $lastAddedResponse;
 
+    /**
+     * @var string[]|array
+     */
+    private $tags = [];
+
+    public function __construct()
+    {
+        $this->saveCurrentDefinition();
+    }
+
     public function method(string $method): self
     {
         $this->method = $method;
@@ -76,6 +82,12 @@ class OpenApiOperationBuilder
 
     public function build()
     {
+        if ($this->inDefinitionContext()) {
+            foreach ($this->tags as $name => $description) {
+                $this->currentDefinition->registerTag($name, $description);
+            }
+        }
+
         return new OpenApiOperation([
             'method' => $this->method,
             'operationId' => $this->operationId,
@@ -83,6 +95,7 @@ class OpenApiOperationBuilder
             'parameters' => collect($this->parameters)->map->build()->all(),
             'requestBody' => optional($this->request)->build(),
             'responses' => collect($this->responses)->map->build()->all(),
+            'tags' => $this->inDefinitionContext() ? array_keys($this->tags) : [],
         ]);
     }
 
@@ -202,6 +215,8 @@ class OpenApiOperationBuilder
                     if ($requestClass = $action->formRequestClass()) {
                         $operation->request($requestClass);
                     }
+
+                    $this->addTag($action->tagName(), $action->tagDescription());
                 })
         );
     }
@@ -277,5 +292,12 @@ class OpenApiOperationBuilder
     private function isFormRequest($request): bool
     {
         return is_string($request) && is_subclass_of($request, FormRequest::class);
+    }
+
+    public function addTag(string $name, string $description): self
+    {
+        $this->tags[$name] = $description;
+
+        return $this;
     }
 }

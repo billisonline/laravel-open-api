@@ -53,7 +53,17 @@ class OpenApiOperation extends DataTransferObject
         return [
             'tags' => (
                 collect($tags)
-                    ->map(function (OpenApiTag $tag) {return $tag->name;})
+                    ->map(function ($tag) {
+                        if (is_object($tag) && ($tag instanceof OpenApiTag)) {
+                            return $tag->name;
+                        }
+
+                        if (is_string($tag)) {
+                            return $tag;
+                        }
+
+                        throw new \Exception;
+                    })
                     ->all()
             )
         ];

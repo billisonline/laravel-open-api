@@ -3,6 +3,8 @@
 namespace BYanelli\OpenApiLaravel\Builders;
 
 use BYanelli\OpenApiLaravel\OpenApiDefinition;
+use BYanelli\OpenApiLaravel\OpenApiPath;
+use BYanelli\OpenApiLaravel\OpenApiTag;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Tappable;
 
@@ -42,6 +44,11 @@ class OpenApiDefinitionBuilder
      * @var array 
      */
     private $properties;
+
+    /**
+     * @var array
+     */
+    private $tags = [];
 
     public static function with(callable $callback): self
     {
@@ -141,6 +148,11 @@ class OpenApiDefinitionBuilder
         $this->components[$type][$key] = $object;
     }
 
+    public function registerTag(string $name, string $description)
+    {
+        $this->tags[$name] = $description;
+    }
+
     public function refPath(ComponentizableInterface $component): string
     {
         $this->validateComponentType($component->getComponentType());
@@ -158,19 +170,31 @@ class OpenApiDefinitionBuilder
         $definitionParams = [
             'paths' => (
                 collect($this->paths)
-                    ->filter(function (OpenApiPathBuilder $path) {
+                    ->filter(function (OpenApiPathBuilder $path): bool {
                         return !is_null($path->getPath());
                     })
-                    ->map(function (OpenApiPathBuilder $path) {
+                    ->map(function (OpenApiPathBuilder $path): OpenApiPath {
                         return $path->build();
                     })
                     ->all()
             ),
-            'info' => $this->info->build()
+            'info' => $this->info->build(),
         ];
 
-        // Components are registered while other objects are being built, so they must be added afterwards
+        // Components and tags are registered while other objects are being built, so they must be added afterwards
         $definitionParams['components'] = $this->components;
+
+        $definitionParams['tags'] = (
+            collect($this->tags)
+                ->map(function (string $description, string $name): OpenApiTag {
+                    return new OpenApiTag([
+                        'name'          => $name,
+                        'description'   => $description,
+                    ]);
+                })
+                ->values()
+                ->all()
+        );
 
         return new OpenApiDefinition($definitionParams);
     }

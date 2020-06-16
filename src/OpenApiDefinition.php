@@ -72,5 +72,4 @@ class OpenApiDefinition extends DataTransferObject
 
         return empty($arr['components']) ? [] : $arr;
     }
-
 }
