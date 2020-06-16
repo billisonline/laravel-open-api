@@ -4,7 +4,13 @@
 namespace TestApp\Http\Responses;
 
 
-class TokenResponse
+use Illuminate\Contracts\Support\Responsable;
+
+class TokenResponse implements Responsable
 {
 
+    public function toResponse($request)
+    {
+        // TODO: Implement toResponse() method.
+    }
 }

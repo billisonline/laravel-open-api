@@ -43,7 +43,7 @@ class ResponseProperties
      * @param OpenApiSchemaBuilder|array $schema
      * @return $this
      */
-    public function setSchema($schema): self
+    public function schema($schema): self
     {
         if (is_array($schema)) {$schema = OpenApiSchemaBuilder::fromArray($schema);}
 
@@ -52,7 +52,7 @@ class ResponseProperties
         return $this;
     }
 
-    public function schema(): ?OpenApiSchemaBuilder
+    public function getSchema(): ?OpenApiSchemaBuilder
     {
         return $this->schema;
     }

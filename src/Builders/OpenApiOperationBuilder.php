@@ -184,7 +184,7 @@ class OpenApiOperationBuilder
         return (
             $this
                 ->method($action->httpMethod())
-                ->operationId($this->buildOperationId($action))
+                ->operationId($action->operationId())
                 ->tap(function (OpenApiOperationBuilder $operation) use ($action) {
                     foreach ($action->pathParameters() as $parameter) {
                         $operation->addParameter(
@@ -264,15 +264,6 @@ class OpenApiOperationBuilder
         $this->operationId = $operationId;
 
         return $this;
-    }
-
-    private function buildOperationId(Action $action): string
-    {
-        [$verb, $noun] = [$action->actionMethod(), $action->objectName()];
-
-        if ($this->action->isPlural()) {$noun = Str::plural($noun);}
-
-        return Str::camel("{$verb} {$noun}");
     }
 
     public function __call($name, $arguments)

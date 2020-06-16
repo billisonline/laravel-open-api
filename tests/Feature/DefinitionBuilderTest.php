@@ -73,7 +73,7 @@ class DefinitionBuilderTest extends TestCase
                 OpenApiInfoBuilder::make()->title('title')->version('version');
 
                 ResponseProperties::for(TokenResponse::class)
-                    ->setSchema([
+                    ->schema([
                         'token'     => 'string',
                         'expiresAt' => 'string',
                     ]);
@@ -81,15 +81,16 @@ class DefinitionBuilderTest extends TestCase
                 OpenApiPathBuilder::make()->action([UserController::class, 'authenticate']);
             },
             [
-                'paths./api/users/authenticate.post.responses.200' => [
-                    '$ref' => '#/components/responses/TokenResponse'
+                'paths./api/users/authenticate.post.responses.200.content.application/json.schema' => [
+                    '$ref' => '#/components/schemas/TokenResponse'
                 ],
-                'components.responses.TokenResponse.content.application/json.schema' => [
+                'components.schemas.TokenResponse' => [
                     'type' => 'object',
                     'properties' => [
                         'token'     => ['type' => 'string'],
                         'expiresAt' => ['type' => 'string'],
-                    ]
+                    ],
+                    'title' => 'TokenResponse',
                 ]
             ]
         );

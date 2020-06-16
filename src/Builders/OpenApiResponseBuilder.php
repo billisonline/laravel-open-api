@@ -3,17 +3,13 @@
 namespace BYanelli\OpenApiLaravel\Builders;
 
 use BYanelli\OpenApiLaravel\OpenApiResponse;
-use BYanelli\OpenApiLaravel\OpenApiResponseRef;
 use BYanelli\OpenApiLaravel\Support\JsonResource;
-use BYanelli\OpenApiLaravel\Support\ResponseProperties;
+use BYanelli\OpenApiLaravel\Support\Response;
 use Illuminate\Support\Traits\Tappable;
 
-class OpenApiResponseBuilder implements ComponentizableInterface
+class OpenApiResponseBuilder
 {
-    use Tappable,
-        StaticallyConstructible,
-        ComponentizableTrait,
-        InteractsWithCurrentDefinition;
+    use Tappable, StaticallyConstructible, InteractsWithCurrentDefinition;
 
     /**
      * @var int
@@ -26,13 +22,6 @@ class OpenApiResponseBuilder implements ComponentizableInterface
     private $jsonSchema;
 
     private $description = 'Success'; //todo
-
-    public $componentType = OpenApiDefinitionBuilder::COMPONENT_TYPE_RESPONSE;
-
-    /**
-     * @var OpenApiDefinitionBuilder
-     */
-    private $currentDefinition;
 
     private $isPlural = false;
 
@@ -74,13 +63,15 @@ class OpenApiResponseBuilder implements ComponentizableInterface
     {
         $this->status($status);
 
-        if ($schema = ResponseProperties::for($response)->schema()) {
-            //todo: ref
+        $response = new Response($response);
+
+        if ($schema = $response->schema()) {
+            $schema
+                ->setComponentKey($response->componentKey())
+                ->setComponentTitle($response->componentTitle());
 
             $this->jsonSchema($schema);
         }
-
-        $this->componentKey = class_basename($response);
 
         return $this;
     }
@@ -108,36 +99,17 @@ class OpenApiResponseBuilder implements ComponentizableInterface
         return $schema;
     }
 
-    public function getComponentObject()
+    public function build()
     {
-        return $this->buildSchema(['componentKey' => $this->componentKey]);
-    }
-
-    private function buildSchema(array $overrides=[])
-    {
-        return new OpenApiResponse(array_merge([
+        return new OpenApiResponse([
             'status'        => $this->status,
             'description'   => $this->description,
             'jsonSchema'    => (
-                !is_null($this->jsonSchema)
-                    ? $this->wrap($this->pluralize($this->jsonSchema))->build()
-                    : null
+            !is_null($this->jsonSchema)
+                ? $this->wrap($this->pluralize($this->jsonSchema))->build()
+                : null
             ),
-        ], $overrides));
-    }
-
-    public function build()
-    {
-        if ($this->inDefinitionContext() && $this->hasComponentKey()) {
-            $this->currentDefinition->registerComponent($this);
-
-            return new OpenApiResponseRef([
-                'status' => $this->status,
-                'ref' => $this->currentDefinition->refPath($this)
-            ]);
-        }
-
-        return $this->buildSchema();
+        ]);
     }
 
     public function getStatus()

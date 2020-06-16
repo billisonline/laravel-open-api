@@ -15,7 +15,7 @@ class PathBuilderTest extends TestCase
         $this->assertEquals(
             [
                 'get' => [
-                    'operationId' => 'indexPosts',
+                    'operationId' => 'postIndex',
                     'description' => 'test',
                 ]
             ],
@@ -34,7 +34,7 @@ class PathBuilderTest extends TestCase
         $this->assertEquals(
             [
                 'get' => [
-                    'operationId' => 'showPost',
+                    'operationId' => 'postShow',
                     'parameters' => [
                         [
                             'name' => 'post',

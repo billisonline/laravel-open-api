@@ -70,6 +70,11 @@ class Action
         return Regex::match('/^([A-Za-z]+)Controller$/', $controllerName)->groupOr(1, $controllerName);
     }
 
+    public function operationId(): string
+    {
+        return Str::camel("{$this->objectName()} {$this->actionMethod()}");
+    }
+
     public function responseClass(): ?string
     {
         $method = new \ReflectionMethod($this->controller(), $this->actionMethod());
@@ -120,7 +125,7 @@ class Action
 
     public function requestComponentTitle(): string
     {
-        return Str::studly($this->actionMethod().'Request');
+        return Str::studly($this->operationId().'Request');
     }
 
     public function responseComponentKey(): string
@@ -130,6 +135,6 @@ class Action
 
     public function responseComponentTitle(): string
     {
-        return Str::studly($this->actionMethod().'Response');
+        return Str::studly($this->operationId().'Response');
     }
 }

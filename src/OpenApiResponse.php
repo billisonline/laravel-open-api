@@ -17,10 +17,7 @@ class OpenApiResponse extends DataTransferObject
     /** @var \BYanelli\OpenApiLaravel\OpenApiSchema|null */
     public $jsonSchema;
 
-    /** @var string|null */
-    public $componentKey;
-
-    protected $exceptKeys = ['status', 'componentKey'];
+    protected $exceptKeys = ['status'];
 
     public $ignoreKeysIfEmpty = ['description', 'jsonSchema'];
 

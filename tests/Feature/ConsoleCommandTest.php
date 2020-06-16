@@ -18,15 +18,15 @@ class ConsoleCommandTest extends TestCase
                     'paths' =>  [
                         '/api/posts' =>  [
                             'get' =>  [
-                                'operationId' => 'indexPosts',
+                                'operationId' => 'postIndex',
                             ],
                             'post' =>  [
-                                'operationId' => 'storePost',
+                                'operationId' => 'postStore',
                                 'requestBody' => [
                                     'content' => [
                                         'application/json' => [
                                             'schema' => [
-                                                '$ref' => '#/components/schemas/StoreRequest'
+                                                '$ref' => '#/components/schemas/PostStoreRequest'
                                             ]
                                         ]
                                     ]
@@ -35,7 +35,7 @@ class ConsoleCommandTest extends TestCase
                         ],
                         '/api/posts/{post}' => [
                             'get' => [
-                                'operationId' => 'showPost',
+                                'operationId' => 'postShow',
                                 'responses' => [
                                     '200' => [
                                         'content' => [
@@ -70,13 +70,13 @@ class ConsoleCommandTest extends TestCase
                     ],
                     'components' => [
                         'schemas' => [
-                            'StoreRequest' => [
+                            'PostStoreRequest' => [
                                 'type' => 'object',
                                 'properties' => [
                                     'title' => ['type' => 'string'],
                                     'body' => ['type' => 'string'],
                                 ],
-                                'title' => 'StoreRequest',
+                                'title' => 'PostStoreRequest',
                             ],
                             'Post' => [
                                 'title' => 'Post',
