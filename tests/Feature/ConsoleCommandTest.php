@@ -20,6 +20,7 @@ class ConsoleCommandTest extends TestCase
                             'get' =>  [
                                 'operationId' => 'postIndex',
                                 'tags' => ['Post'],
+                                'description' => 'List posts',
                             ],
                             'post' =>  [
                                 'operationId' => 'postStore',
@@ -33,6 +34,7 @@ class ConsoleCommandTest extends TestCase
                                     ]
                                 ],
                                 'tags' => ['Post'],
+                                'description' => 'Create post',
                             ],
                         ],
                         '/api/posts/{post}' => [
@@ -64,6 +66,7 @@ class ConsoleCommandTest extends TestCase
                                     ]
                                 ],
                                 'tags' => ['Post'],
+                                'description' => 'Show post',
                             ]
                         ]
                     ],
@@ -74,7 +77,7 @@ class ConsoleCommandTest extends TestCase
                     'tags' => [
                         [
                             'name' => 'Post',
-                            'description' => '(tag description here)',
+                            'description' => 'Manage posts',
                         ],
                     ],
                     'components' => [

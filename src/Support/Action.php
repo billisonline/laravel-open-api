@@ -5,6 +5,7 @@ namespace BYanelli\OpenApiLaravel\Support;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Routing\Route as IlluminateRoute;
 use Illuminate\Support\Str;
+use phpDocumentor\Reflection\DocBlockFactory;
 use Spatie\Regex\Regex;
 
 class Action
@@ -143,8 +144,21 @@ class Action
         return $this->objectName();
     }
 
-    public function tagDescription()
+    public function tagDescription(): string
     {
-        return '(tag description here)'; //todo
+        $docBlockFactory = DocBlockFactory::createInstance();
+
+        $class = new \ReflectionClass($this->controller());
+
+        return $docBlockFactory->create($class->getDocComment() ?: '/** */')->getSummary();
+    }
+
+    public function description(): string
+    {
+        $docBlockFactory = DocBlockFactory::createInstance();
+
+        $method = new \ReflectionMethod($this->controller(), $this->actionMethod());
+
+        return $docBlockFactory->create($method->getDocComment() ?: '/** */')->getSummary();
     }
 }

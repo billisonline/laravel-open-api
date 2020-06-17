@@ -42,7 +42,8 @@ class PathBuilderTest extends TestCase
                             'required' => false, //todo
                             'description' => 'Id of the Post to show'
                         ]
-                    ]
+                    ],
+                    'description' => 'Show post',
                 ]
             ],
             OpenApiPathBuilder::make()

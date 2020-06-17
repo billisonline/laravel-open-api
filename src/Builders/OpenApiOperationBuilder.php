@@ -198,6 +198,7 @@ class OpenApiOperationBuilder
             $this
                 ->method($action->httpMethod())
                 ->operationId($action->operationId())
+                ->description($action->description())
                 ->tap(function (OpenApiOperationBuilder $operation) use ($action) {
                     foreach ($action->pathParameters() as $parameter) {
                         $operation->addParameter(
