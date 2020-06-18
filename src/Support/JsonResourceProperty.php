@@ -23,8 +23,12 @@ class JsonResourceProperty
      * @var string|null
      */
     private $resourceType;
+    /**
+     * @var string
+     */
+    private $description;
 
-    public function __construct(string $name, string $type, bool $isConditional, ?string $resourceType=null)
+    public function __construct(string $name, string $type, bool $isConditional, string $description='', ?string $resourceType = null)
     {
         $this->validateType($type);
 
@@ -32,6 +36,7 @@ class JsonResourceProperty
         $this->type = $type;
         $this->isConditional = $isConditional;
         $this->resourceType = $resourceType;
+        $this->description = $description;
     }
 
     private function validateType(string $type): void
@@ -59,5 +64,10 @@ class JsonResourceProperty
     public function isConditional(): bool
     {
         return $this->isConditional;
+    }
+
+    public function description(): string
+    {
+        return $this->description;
     }
 }

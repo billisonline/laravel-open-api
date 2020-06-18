@@ -100,27 +100,31 @@ class JsonResource
 
     private function convertSpyToProperty(JsonResourcePropertySpy $propertySpy, string $name): JsonResourceProperty
     {
+        $model = $this->model();
+
         $accessor = $propertySpy->accessor();
         $isConditional = $propertySpy->isConditional();
 
-        if ($this->model()->hasColumn($accessor)) {
-            $type = $this->fixDatabaseType($this->model()->getColumnType($accessor));
+        if ($model->hasColumn($accessor)) {
+            $type = $this->fixDatabaseType($model->getColumnType($accessor));
         }
 
-        if ($this->model()->hasGetMutator($accessor)) {
-            $type = $this->fixPhpType($this->model()->getGetMutatorType($accessor));
+        if ($model->hasGetMutator($accessor)) {
+            $type = $this->fixPhpType($model->getGetMutatorType($accessor));
         }
 
         if (!isset($type)) {
             throw new \Exception($accessor);
         }
 
-        return new JsonResourceProperty($name, $type, $isConditional);
+        $description = $model->getDescription($accessor);
+
+        return new JsonResourceProperty($name, $type, $isConditional, $description);
     }
 
     private function convertJsonResourceToProperty(BaseJsonResource $resource, string $name): JsonResourceProperty
     {
-        return new JsonResourceProperty($name, 'json_resource', false, get_class($resource));
+        return new JsonResourceProperty($name, 'json_resource', false, '', get_class($resource));
     }
 
     private function fixDatabaseType(string $type): string

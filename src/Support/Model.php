@@ -5,6 +5,10 @@ namespace BYanelli\OpenApiLaravel\Support;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Str;
+use phpDocumentor\Reflection\DocBlock\Tag;
+use phpDocumentor\Reflection\DocBlock\Tags\Property;
+use phpDocumentor\Reflection\DocBlockFactory;
+use Spatie\Regex\Regex;
 
 class Model
 {
@@ -55,5 +59,30 @@ class Model
     public function model(): EloquentModel
     {
         return $this->model;
+    }
+
+    public function getDescription(string $accessor): string
+    {
+        $class = new \ReflectionClass($this->model);
+
+        $docBlockFactory = DocBlockFactory::createInstance();
+
+        $docBlock = $docBlockFactory->create($class->getDocComment() ?: '/**  */');
+
+        return (
+            collect($docBlock->getTags())
+                ->whereInstanceOf(Property::class)
+                ->filter(function (Property $property) use ($accessor): bool {
+                    $pattern = '/\s*'.preg_quote($accessor).'\s*(.*)/';
+
+                    return Regex::match($pattern, $property->getDescription()->getBodyTemplate())->hasMatch();
+                })
+                ->map(function (Property $property) use ($accessor): string {
+                    $pattern = '/\s*'.preg_quote($accessor).'\s*(.*)/';
+
+                    return Regex::match($pattern, $property->getDescription()->getBodyTemplate())->groupOr(1, '');
+                })
+                ->first() ?: ''
+        );
     }
 }

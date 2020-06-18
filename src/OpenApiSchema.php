@@ -46,6 +46,9 @@ class OpenApiSchema extends DataTransferObject
     /** @var string|null */
     public $componentTitle;
 
+    /** @var string|null */
+    public $description;
+
     public $keyArrayBy = [
         'properties' => 'name',
     ];
@@ -65,6 +68,7 @@ class OpenApiSchema extends DataTransferObject
         'items',
         'properties',
         'componentTitle',
+        'description',
     ];
 
     public $applyKeys = [

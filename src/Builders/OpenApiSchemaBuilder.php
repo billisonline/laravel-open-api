@@ -47,6 +47,11 @@ class OpenApiSchemaBuilder implements ComponentizableInterface
      */
     public $componentType = OpenApiDefinitionBuilder::COMPONENT_TYPE_SCHEMA;
 
+    /**
+     * @var string
+     */
+    private $description;
+
     public static function asComponent(string $name, array $body=[]): self
     {
         return static::make()->component($name, $body);
@@ -104,6 +109,7 @@ class OpenApiSchemaBuilder implements ComponentizableInterface
                 OpenApiSchemaBuilder::make()
                     ->name($property->name())
                     ->type($property->type())
+                    ->description($property->description())
                     ->nullable($property->isConditional())
             );
         }
@@ -212,10 +218,11 @@ class OpenApiSchemaBuilder implements ComponentizableInterface
     private function buildSchema(array $overrides=[]): OpenApiSchema
     {
         $params = [
-            'type'      => $this->type,
-            'items'     => optional($this->items)->build(),
-            'nullable'  => $this->nullable,
-            'properties' => collect($this->properties)->map->build()->all(),
+            'type'          => $this->type,
+            'items'         => optional($this->items)->build(),
+            'nullable'      => $this->nullable,
+            'properties'    => collect($this->properties)->map->build()->all(),
+            'description'   => $this->description,
         ];
 
         if (!empty($this->name)) {$params['name'] = $this->name;}
@@ -255,5 +262,12 @@ class OpenApiSchemaBuilder implements ComponentizableInterface
         }
 
         return $this->buildSchema();
+    }
+
+    public function description(string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
     }
 }

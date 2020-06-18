@@ -115,7 +115,10 @@ class OperationBuilderTest extends TestCase
                                             'type' => 'string',
                                             'nullable' => true,
                                         ],
-                                        'headlineSlug' => ['type' => 'string'],
+                                        'headlineSlug' => [
+                                            'type' => 'string',
+                                            'description' => 'The URL slug for the post\'s headline',
+                                        ],
                                     ]
                                 ]
                             ]
@@ -151,7 +154,10 @@ class OperationBuilderTest extends TestCase
                                                 'type' => 'string',
                                                 'nullable' => true,
                                             ],
-                                            'headlineSlug' => ['type' => 'string'],
+                                            'headlineSlug' => [
+                                                'type' => 'string',
+                                                'description' => 'The URL slug for the post\'s headline',
+                                            ],
                                         ]
                                     ]
                                 ]

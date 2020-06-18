@@ -103,6 +103,7 @@ class ConsoleCommandTest extends TestCase
                                     ],
                                     'headlineSlug' => [
                                         'type' => 'string',
+                                        'description' => 'The URL slug for the post\'s headline',
                                     ],
                                 ],
                             ]
