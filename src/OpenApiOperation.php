@@ -29,6 +29,9 @@ class OpenApiOperation extends DataTransferObject
     /** @var \BYanelli\OpenApiLaravel\OpenApiParameter[]|array  */
     public $parameters = [];
 
+    /** @var bool  */
+    public $usingBearerTokenAuth = false;
+
     protected $exceptKeys = ['method'];
 
     public $ignoreKeysIfEmpty = [
@@ -67,5 +70,18 @@ class OpenApiOperation extends DataTransferObject
                     ->all()
             )
         ];
+    }
+
+    public function serializeUsingBearerTokenAuth(bool $usingBearerTokenAuth)
+    {
+        if ($usingBearerTokenAuth) {
+            return [
+                'security' => [
+                    ['BearerAuth' => [],],
+                ]
+            ];
+        }
+
+        return [];
     }
 }

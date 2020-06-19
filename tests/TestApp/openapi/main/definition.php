@@ -2,6 +2,7 @@
 
 use BYanelli\OpenApiLaravel\Builders\KeyedResponseSchemaWrapper;
 use BYanelli\OpenApiLaravel\Builders\OpenApiDefinitionBuilder;
+use BYanelli\OpenApiLaravel\Builders\OpenApiGroup;
 use BYanelli\OpenApiLaravel\Builders\OpenApiInfoBuilder;
 use BYanelli\OpenApiLaravel\Builders\OpenApiOperationBuilder;
 use BYanelli\OpenApiLaravel\Builders\OpenApiPathBuilder;
@@ -18,8 +19,11 @@ OpenApiPathBuilder::make()->action([PostController::class, 'index']);
 OpenApiPathBuilder::make()->action([PostController::class, 'show'], function (OpenApiOperationBuilder $operation) {
     $operation->response(OpenApiResponseBuilder::make()->fromResource(Post::class));
 });
-OpenApiPathBuilder::make()->action([PostController::class, 'store'])
-    ->request([
-        'title' => 'string',
-        'body' => 'string',
-    ]);
+
+OpenApiGroup::make()->usingBearerTokenAuth()->operations(function () {
+    OpenApiPathBuilder::make()->action([PostController::class, 'store'])
+        ->request([
+            'title' => 'string',
+            'body' => 'string',
+        ]);
+});

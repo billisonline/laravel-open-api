@@ -50,6 +50,11 @@ class OpenApiDefinitionBuilder
      */
     private $tags = [];
 
+    /**
+     * @var bool
+     */
+    private $usingBearerTokenAuth = false;
+
     public static function with(callable $callback): self
     {
         $current = static::$current = new static;
@@ -179,6 +184,7 @@ class OpenApiDefinitionBuilder
                     ->all()
             ),
             'info' => $this->info->build(),
+            'usingBearerTokenAuth' => $this->usingBearerTokenAuth,
         ];
 
         // Components and tags are registered while other objects are being built, so they must be added afterwards
@@ -197,5 +203,12 @@ class OpenApiDefinitionBuilder
         );
 
         return new OpenApiDefinition($definitionParams);
+    }
+
+    public function usingBearerTokenAuth(): self
+    {
+        $this->usingBearerTokenAuth = true;
+
+        return $this;
     }
 }

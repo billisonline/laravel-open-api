@@ -40,7 +40,7 @@ class OpenApiPathBuilder
     }
 
     /**
-     * @param Action|array|string $action
+     * @param Action|array|string|callable $action
      * @param callable|null $tapOperation
      * @return $this
      */

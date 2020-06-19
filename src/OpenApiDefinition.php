@@ -23,6 +23,11 @@ class OpenApiDefinition extends DataTransferObject
     /** @var \BYanelli\OpenApiLaravel\OpenApiSchema[]|array */
     public $components = [];
 
+    /** @var bool  */
+    public $usingBearerTokenAuth = false;
+
+    protected $exceptKeys = ['usingBearerTokenAuth'];
+
     public $keyArrayBy  = [
         'paths' => 'path',
     ];
@@ -51,7 +56,7 @@ class OpenApiDefinition extends DataTransferObject
         return $this;
     }
 
-    private function allToArrayKeyedBycomponentKey(array $dtos): array
+    private function allToArrayKeyedByComponentKey(array $dtos): array
     {
         return (
             collect($dtos)
@@ -65,10 +70,17 @@ class OpenApiDefinition extends DataTransferObject
     {
         $arr = [
             'components' => array_filter([
-                'schemas' => $this->allToArrayKeyedBycomponentKey($components['schemas'] ?? []),
-                'responses' => $this->allToArrayKeyedBycomponentKey($components['responses'] ?? []),
+                'schemas' => $this->allToArrayKeyedByComponentKey($components['schemas'] ?? []),
+                'responses' => $this->allToArrayKeyedByComponentKey($components['responses'] ?? []),
             ])
         ];
+
+        if ($this->usingBearerTokenAuth) {
+            $arr['components']['securitySchemes']['BearerAuth'] = [
+                'type'      => 'http',
+                'scheme'    => 'bearer',
+            ];
+        }
 
         return empty($arr['components']) ? [] : $arr;
     }

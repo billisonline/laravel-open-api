@@ -35,6 +35,9 @@ class ConsoleCommandTest extends TestCase
                                 ],
                                 'tags' => ['Post'],
                                 'description' => 'Create post',
+                                'security' => [
+                                    ['BearerAuth' => [],],
+                                ],
                             ],
                         ],
                         '/api/posts/{post}' => [
@@ -107,7 +110,13 @@ class ConsoleCommandTest extends TestCase
                                     ],
                                 ],
                             ]
-                        ]
+                        ],
+                        'securitySchemes' => [
+                            'BearerAuth' => [
+                                'type' => 'http',
+                                'scheme' => 'bearer',
+                            ],
+                        ],
                     ]
                 ],
                 $output

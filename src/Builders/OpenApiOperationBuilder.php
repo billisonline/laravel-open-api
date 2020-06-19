@@ -14,7 +14,7 @@ use Illuminate\Support\Traits\Tappable;
  */
 class OpenApiOperationBuilder
 {
-    use Tappable, StaticallyConstructible, InteractsWithCurrentDefinition;
+    use Tappable, StaticallyConstructible, InteractsWithCurrentDefinition, InteractsWithCurrentGroup;
 
     /**
      * @var string
@@ -61,9 +61,15 @@ class OpenApiOperationBuilder
      */
     private $tags = [];
 
+    /**
+     * @var bool
+     */
+    private $usingBearerTokenAuth = false;
+
     public function __construct()
     {
         $this->saveCurrentDefinition();
+        $this->saveCurrentGroup();
     }
 
     public function method(string $method): self
@@ -82,6 +88,8 @@ class OpenApiOperationBuilder
 
     public function build()
     {
+        $this->applyGroupProperties();
+
         if ($this->inDefinitionContext()) {
             foreach ($this->tags as $name => $description) {
                 $this->currentDefinition->registerTag($name, $description);
@@ -89,13 +97,14 @@ class OpenApiOperationBuilder
         }
 
         return new OpenApiOperation([
-            'method' => $this->method,
-            'operationId' => $this->operationId,
-            'description' => $this->description,
-            'parameters' => collect($this->parameters)->map->build()->all(),
-            'requestBody' => optional($this->request)->build(),
-            'responses' => collect($this->responses)->map->build()->all(),
-            'tags' => $this->inDefinitionContext() ? array_keys($this->tags) : [],
+            'method'                => $this->method,
+            'operationId'           => $this->operationId,
+            'description'           => $this->description,
+            'parameters'            => collect($this->parameters)->map->build()->all(),
+            'requestBody'           => optional($this->request)->build(),
+            'responses'             => collect($this->responses)->map->build()->all(),
+            'tags'                  => $this->inDefinitionContext() ? array_keys($this->tags) : [],
+            'usingBearerTokenAuth'  => $this->usingBearerTokenAuth,
         ]);
     }
 
@@ -298,6 +307,17 @@ class OpenApiOperationBuilder
     public function addTag(string $name, string $description): self
     {
         $this->tags[$name] = $description;
+
+        return $this;
+    }
+
+    public function usingBearerTokenAuth(): self
+    {
+        if ($this->inDefinitionContext()) {
+            $this->currentDefinition->usingBearerTokenAuth();
+        }
+
+        $this->usingBearerTokenAuth = true;
 
         return $this;
     }
