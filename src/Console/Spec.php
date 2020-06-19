@@ -2,7 +2,7 @@
 
 namespace BYanelli\OpenApiLaravel\Console;
 
-use BYanelli\OpenApiLaravel\Builders\OpenApiDefinitionBuilder;
+use BYanelli\OpenApiLaravel\Objects\OpenApiDefinition;
 use Illuminate\Console\Command;
 
 class Spec extends Command
@@ -17,7 +17,7 @@ class Spec extends Command
 
         $definitionPath = base_path("openapi/{$definitionName}/definition.php");
 
-        $definition = OpenApiDefinitionBuilder::with(function () use ($definitionPath) {
+        $definition = OpenApiDefinition::with(function () use ($definitionPath) {
             require $definitionPath;
         });
 

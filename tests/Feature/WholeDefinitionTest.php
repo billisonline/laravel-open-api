@@ -2,10 +2,10 @@
 
 namespace BYanelli\OpenApiLaravel\Tests\Feature;
 
-use BYanelli\OpenApiLaravel\Builders\OpenApiDefinitionBuilder;
-use BYanelli\OpenApiLaravel\Builders\OpenApiInfoBuilder;
-use BYanelli\OpenApiLaravel\Builders\OpenApiOperationBuilder;
-use BYanelli\OpenApiLaravel\Builders\OpenApiPathBuilder;
+use BYanelli\OpenApiLaravel\Objects\OpenApiDefinition;
+use BYanelli\OpenApiLaravel\Objects\OpenApiInfo;
+use BYanelli\OpenApiLaravel\Objects\OpenApiOperation;
+use BYanelli\OpenApiLaravel\Objects\OpenApiPath;
 use BYanelli\OpenApiLaravel\Tests\TestCase;
 
 class WholeDefinitionTest extends TestCase
@@ -13,14 +13,14 @@ class WholeDefinitionTest extends TestCase
     /** @test */
     public function build_whole_definition()
     {
-        $def = OpenApiDefinitionBuilder::with(function () {
-            OpenApiInfoBuilder::make()->title('test')->version('1.0');
+        $def = OpenApiDefinition::with(function () {
+            OpenApiInfo::make()->title('test')->version('1.0');
 
-            OpenApiPathBuilder::make()->path('/api/posts')->addOperation(
-                OpenApiOperationBuilder::make()->method('get')->operationId('indexPosts')
+            OpenApiPath::make()->path('/api/posts')->addOperation(
+                OpenApiOperation::make()->method('get')->operationId('indexPosts')
             );
-            OpenApiPathBuilder::make()->path('/api/posts')->addOperation(
-                OpenApiOperationBuilder::make()->method('post')->operationId('storePost')
+            OpenApiPath::make()->path('/api/posts')->addOperation(
+                OpenApiOperation::make()->method('post')->operationId('storePost')
             );
         });
 

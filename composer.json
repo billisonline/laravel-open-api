@@ -41,7 +41,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "BYanelli\\OpenApiLaravel\\OpenApiServiceProvider"
+              "OpenApiServiceProviderDto"
             ],
             "aliases": [
 
