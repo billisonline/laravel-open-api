@@ -57,7 +57,7 @@ class DefinitionTest extends TestCase
     {
         OpenApiDefinition::with(function () {
             JsonResourceProperties::for(AlternateUserResource::class)
-                ->setModel(User::class);
+                ->model(User::class);
 
             $modelClass = (new JsonResource(AlternateUserResource::class))->modelClass();
 
@@ -124,7 +124,7 @@ class DefinitionTest extends TestCase
                 OpenApiInfo::make()->title('title')->version('version');
 
                 JsonResourceProperties::for(AlternateUserResource::class)
-                    ->setSchema([
+                    ->schema([
                         'userEmail'     => 'string',
                         'userFirstName' => 'string',
                         'userLastName'  => 'string',

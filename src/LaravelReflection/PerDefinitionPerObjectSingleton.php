@@ -12,7 +12,7 @@ trait PerDefinitionPerObjectSingleton
      */
     public static function for(string $object)
     {
-        if ($definition = OpenApiDefinition::getCurrent()) {
+        if ($definition = OpenApiDefinition::current()) {
             if ($existingInstance = $definition->getPropertiesInstance(static::class, $object)) {
                 return $existingInstance;
             }

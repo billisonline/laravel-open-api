@@ -8,6 +8,12 @@ use BYanelli\OpenApiLaravel\Objects\Dtos\OpenApiTagDto;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Tappable;
 
+/**
+ * Fluently build an OpenAPI definition. The {@link OpenApiDefinition::with} method collects all info, paths, etc.
+ * for the definition.
+ *
+ * @see https://swagger.io/docs/specification/basic-structure/
+ */
 class OpenApiDefinition
 {
     use Tappable, StaticallyConstructible;
@@ -55,6 +61,13 @@ class OpenApiDefinition
      */
     private $usingBearerTokenAuth = false;
 
+    /**
+     * Create a new definition object and set it as the current definition while the given callable is run. Paths,
+     * info, operations, etc. constructed inside the callable will use this object as their current definition.
+     *
+     * @param callable $callback
+     * @return static
+     */
     public static function with(callable $callback): self
     {
         $current = static::$current = new static;
@@ -66,23 +79,53 @@ class OpenApiDefinition
         return $current;
     }
 
-    public static function getCurrent(): ?self
+    /**
+     * Get the current definition object if we are in a definition context (cf. {@link with}); otherwise return null.
+     *
+     * @return static|null
+     */
+    public static function current(): ?self
     {
         return static::$current;
     }
 
-    public function getPropertiesInstance(string $class, string $scope): ?object
+    /**
+     * Get an instance of the user-defined "properties" object for the given type (e.g., JsonResource, FormRequest) and
+     * subclass of that type (e.g., UserResource, CreatePostRequest)
+     *
+     * @param string $propertiesType
+     * @param string $subclass
+     * @return object|null
+     */
+    public function getPropertiesInstance(string $propertiesType, string $subclass): ?object
     {
-        return $this->properties[$class][$scope] ?? null;
+        return $this->properties[$propertiesType][$subclass] ?? null;
     }
 
-    public function setPropertiesInstance(string $class, string $scope, object $instance): self
+    /**
+     * Set an instance of the user-defined "properties" object for the given type (e.g., JsonResource, FormRequest) and
+     * subclass of that type (e.g., UserResource, CreatePostRequest). This instance will be subsequently returned by
+     * {@link getPropertiesInstance}
+     *
+     * @param string $propertiesType
+     * @param string $subclass
+     * @param object $instance
+     * @return OpenApiDefinition
+     */
+    public function setPropertiesInstance(string $propertiesType, string $subclass, object $instance): self
     {
-        $this->properties[$class][$scope] = $instance;
+        $this->properties[$propertiesType][$subclass] = $instance;
 
         return $this;
     }
 
+    /**
+     * Set a "wrapper" which will wrap all response schemas in an outer object. This may be useful if, for example, your
+     * endpoints return JSON data in a `data` or `content` key.
+     *
+     * @param ResponseSchemaWrapper $wrapper
+     * @return $this
+     */
     public function responseSchemaWrapper(ResponseSchemaWrapper $wrapper)
     {
         $this->responseSchemaWrapper = $wrapper;
@@ -90,6 +133,12 @@ class OpenApiDefinition
         return $this;
     }
 
+    /**
+     * If a response schema wrapper has been set, apply it to the given schema.
+     *
+     * @param OpenApiSchema $schema
+     * @return OpenApiSchema
+     */
     public function wrapResponseSchema(OpenApiSchema $schema): OpenApiSchema
     {
         if (!is_null($this->responseSchemaWrapper)) {
@@ -99,6 +148,12 @@ class OpenApiDefinition
         return $schema;
     }
 
+    /**
+     * Add a path to the definition.
+     *
+     * @param OpenApiPath $path
+     * @return $this
+     */
     public function addPath(OpenApiPath $path): self
     {
         $this->paths[] = $path;
@@ -106,6 +161,12 @@ class OpenApiDefinition
         return $this;
     }
 
+    /**
+     * Either find an existing path object corresponding to the given string (URI with params), or create one.
+     *
+     * @param string $path
+     * @return OpenApiPath
+     */
     public function findOrCreatePath(string $path): OpenApiPath
     {
         if ($existing = $this->findPath($path)) {
@@ -115,6 +176,12 @@ class OpenApiDefinition
         return new OpenApiPath($path);
     }
 
+    /**
+     * Find a path object corresponding to the given string (URI with params), or return null if none exists.
+     *
+     * @param string $pathToFind
+     * @return OpenApiPath|null
+     */
     public function findPath(string $pathToFind): ?OpenApiPath
     {
         return (
@@ -126,6 +193,12 @@ class OpenApiDefinition
         );
     }
 
+    /**
+     * Set the "info" block for this definition.
+     *
+     * @param OpenApiInfo $info
+     * @return $this
+     */
     public function info(OpenApiInfo $info)
     {
         $this->info = $info;
@@ -133,6 +206,15 @@ class OpenApiDefinition
         return $this;
     }
 
+    /**
+     * Ensure the given component type is valid or throw an exception. Note: not all component types that are valid in
+     * the OpenAPI 3.0 spec are supported yet.
+     *
+     * @see https://swagger.io/docs/specification/components/
+     *
+     * @param string $type
+     * @throws \Exception
+     */
     private function validateComponentType(string $type): void
     {
         if (!in_array($type, [self::COMPONENT_TYPE_SCHEMA, self::COMPONENT_TYPE_RESPONSE])) {
@@ -140,6 +222,12 @@ class OpenApiDefinition
         }
     }
 
+    /**
+     * Register a component in the components section.
+     *
+     * @param ComponentizableInterface $component
+     * @throws \Exception
+     */
     public function registerComponent(ComponentizableInterface $component)
     {
         $this->validateComponentType($component->getComponentType());
@@ -153,11 +241,28 @@ class OpenApiDefinition
         $this->components[$type][$key] = $object;
     }
 
+    /**
+     * Register a tag in the tags section.
+     *
+     * @see https://swagger.io/docs/specification/grouping-operations-with-tags/
+     *
+     * @param string $name
+     * @param string $description
+     */
     public function registerTag(string $name, string $description)
     {
         $this->tags[$name] = $description;
     }
 
+    /**
+     * Get the `$ref` path to reference a component from elsewhere in the definition.
+     *
+     * @see https://swagger.io/docs/specification/using-ref/
+     *
+     * @param ComponentizableInterface $component
+     * @return string
+     * @throws \Exception
+     */
     public function refPath(ComponentizableInterface $component): string
     {
         $this->validateComponentType($component->getComponentType());
@@ -170,27 +275,30 @@ class OpenApiDefinition
         return "#/components/{$type}/{$key}";
     }
 
-    public function build()
+    public function build(): OpenApiDefinitionDto
     {
         $definitionParams = [
-            'paths' => (
-                collect($this->paths)
-                    ->filter(function (OpenApiPath $path): bool {
-                        return !is_null($path->getPath());
-                    })
-                    ->map(function (OpenApiPath $path): OpenApiPathDto {
-                        return $path->build();
-                    })
-                    ->all()
-            ),
-            'info' => $this->info->build(),
-            'usingBearerTokenAuth' => $this->usingBearerTokenAuth,
+            'paths'                 => $this->collectPaths(),
+            'info'                  => $this->info->build(),
+            'usingBearerTokenAuth'  => $this->usingBearerTokenAuth,
         ];
 
         // Components and tags are registered while other objects are being built, so they must be added afterwards
         $definitionParams['components'] = $this->components;
 
-        $definitionParams['tags'] = (
+        $definitionParams['tags'] = $this->collectTags();
+
+        return new OpenApiDefinitionDto($definitionParams);
+    }
+
+    /**
+     * Collect and build all registered tags.
+     *
+     * @return OpenApiTagDto[]|array
+     */
+    protected function collectTags(): array
+    {
+        return (
             collect($this->tags)
                 ->map(function (string $description, string $name): OpenApiTagDto {
                     return new OpenApiTagDto([
@@ -201,14 +309,37 @@ class OpenApiDefinition
                 ->values()
                 ->all()
         );
-
-        return new OpenApiDefinitionDto($definitionParams);
     }
 
+    /**
+     * Specify that this definition has one or more paths authenticating with an `Authorization: Bearer {token}` header.
+     *
+     * @return $this
+     */
     public function usingBearerTokenAuth(): self
     {
         $this->usingBearerTokenAuth = true;
 
         return $this;
+    }
+
+    /**
+     * Collect and build all registered paths. Exclude path objects that were created and abandoned because an identical
+     * path was found.
+     *
+     * @return OpenApiPathDto[]|array
+     */
+    protected function collectPaths(): array
+    {
+        return (
+            collect($this->paths)
+                ->filter(function (OpenApiPath $path): bool {
+                    return !is_null($path->getPath());
+                })
+                ->map(function (OpenApiPath $path): OpenApiPathDto {
+                    return $path->build();
+                })
+                ->all()
+        );
     }
 }

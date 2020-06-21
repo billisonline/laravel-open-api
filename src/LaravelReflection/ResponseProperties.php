@@ -21,7 +21,7 @@ class ResponseProperties
 
     public static function for(string $response)
     {
-        if ($definition = OpenApiDefinition::getCurrent()) {
+        if ($definition = OpenApiDefinition::current()) {
             if ($existingInstance = $definition->getPropertiesInstance(static::class, $response)) {
                 return $existingInstance;
             }

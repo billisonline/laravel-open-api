@@ -11,7 +11,7 @@ trait InteractsWithCurrentDefinition
 
     protected function saveCurrentDefinition(): void
     {
-        $this->currentDefinition = OpenApiDefinition::getCurrent();
+        $this->currentDefinition = OpenApiDefinition::current();
     }
 
     protected function inDefinitionContext(): bool

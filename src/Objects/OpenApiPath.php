@@ -30,11 +30,20 @@ class OpenApiPath
      */
     private $lastAddedOperation;
 
+    /**
+     * @param Action|array|string|callable $action
+     * @return static
+     */
+    public static function fromAction($action)
+    {
+        return static::make()->action($action);
+    }
+
     public function __construct(?string $path=null)
     {
         $this->path = $path;
 
-        if ($currentDef = OpenApiDefinition::getCurrent()) {
+        if ($currentDef = OpenApiDefinition::current()) {
             $currentDef->addPath($this);
         }
     }
@@ -76,7 +85,7 @@ class OpenApiPath
 
     public function path(string $path): self
     {
-        if ($definition = OpenApiDefinition::getCurrent()) {
+        if ($definition = OpenApiDefinition::current()) {
             return $definition->findOrCreatePath($this->preparePath($path));
         }
 

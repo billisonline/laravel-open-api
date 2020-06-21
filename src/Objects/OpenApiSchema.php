@@ -96,7 +96,7 @@ class OpenApiSchema implements ComponentizableInterface
 
     public function fromResource(JsonResource $resource): self
     {
-        if ($schema = $resource->definedProperties()->schema()) {
+        if ($schema = $resource->definedProperties()->getSchema()) {
             return $schema->componentKey($resource->componentKey())->componentTitle($resource->componentTitle());
         }
 

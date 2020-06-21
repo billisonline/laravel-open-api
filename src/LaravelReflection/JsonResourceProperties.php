@@ -29,14 +29,14 @@ class JsonResourceProperties
         $this->resource = $resource;
     }
 
-    public function setModel(string $model): self
+    public function model(string $model): self
     {
         $this->model = $model;
 
         return $this;
     }
 
-    public function model(): ?string
+    public function getModel(): ?string
     {
         return $this->model;
     }
@@ -52,7 +52,7 @@ class JsonResourceProperties
      * @param OpenApiSchema|array $schema
      * @return $this
      */
-    public function setSchema($schema): self
+    public function schema($schema): self
     {
         if (is_array($schema)) {$schema = OpenApiSchema::fromArray($schema);}
 
@@ -61,7 +61,7 @@ class JsonResourceProperties
         return $this;
     }
 
-    public function schema(): ?OpenApiSchema
+    public function getSchema(): ?OpenApiSchema
     {
         return $this->schema;
     }

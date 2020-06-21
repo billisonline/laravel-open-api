@@ -21,7 +21,7 @@ class OpenApiInfo
 
     public function __construct()
     {
-        if ($currentDef = OpenApiDefinition::getCurrent()) {
+        if ($currentDef = OpenApiDefinition::current()) {
             $currentDef->info($this);
         }
     }

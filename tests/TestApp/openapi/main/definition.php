@@ -10,7 +10,7 @@ use BYanelli\OpenApiLaravel\Objects\OpenApiResponse;
 use TestApp\Http\Controllers\PostController;
 use TestApp\Http\Resources\Post;
 
-OpenApiDefinition::getCurrent()
+OpenApiDefinition::current()
     ->responseSchemaWrapper(new KeyedResponseSchemaWrapper('data'));
 
 OpenApiInfo::make()->title('test')->version('1.0');

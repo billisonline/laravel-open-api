@@ -175,7 +175,7 @@ class JsonResource
 
     public function schema(): OpenApiSchema
     {
-        if ($schema = $this->definedProperties->schema()) {
+        if ($schema = $this->definedProperties->getSchema()) {
             return $schema;
         }
 
