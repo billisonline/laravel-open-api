@@ -18,4 +18,11 @@ trait InteractsWithCurrentDefinition
     {
         return !is_null($this->currentDefinition);
     }
+
+    public function whenInDefinitionContext(callable $callable)
+    {
+        if ($currentDefinition = ($this->currentDefinition ?: OpenApiDefinition::current())) {
+            $callable($currentDefinition);
+        }
+    }
 }

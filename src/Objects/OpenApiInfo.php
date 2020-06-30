@@ -7,7 +7,7 @@ use Illuminate\Support\Traits\Tappable;
 
 class OpenApiInfo
 {
-    use Tappable, StaticallyConstructible;
+    use Tappable, StaticallyConstructible, InteractsWithCurrentDefinition;
 
     /**
      * @var string
@@ -21,9 +21,9 @@ class OpenApiInfo
 
     public function __construct()
     {
-        if ($currentDef = OpenApiDefinition::current()) {
-            $currentDef->info($this);
-        }
+        $this->whenInDefinitionContext(function (OpenApiDefinition $definition) {
+            $definition->info($this);
+        });
     }
 
     public function title(string $title): self

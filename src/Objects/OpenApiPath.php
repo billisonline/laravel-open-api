@@ -13,7 +13,7 @@ use Illuminate\Support\Traits\Tappable;
  */
 class OpenApiPath
 {
-    use Tappable, StaticallyConstructible;
+    use Tappable, StaticallyConstructible, InteractsWithCurrentDefinition;
 
     /**
      * @var string
@@ -41,10 +41,12 @@ class OpenApiPath
 
     public function __construct(?string $path=null)
     {
+        $this->saveCurrentDefinition();
+
         $this->path = $path;
 
-        if ($currentDef = OpenApiDefinition::current()) {
-            $currentDef->addPath($this);
+        if ($this->inDefinitionContext()) {
+            $this->currentDefinition->addPath($this);
         }
     }
 
@@ -85,8 +87,8 @@ class OpenApiPath
 
     public function path(string $path): self
     {
-        if ($definition = OpenApiDefinition::current()) {
-            return $definition->findOrCreatePath($this->preparePath($path));
+        if ($this->inDefinitionContext()) {
+            return $this->currentDefinition->findOrCreatePath($this->preparePath($path));
         }
 
         $this->path = $this->preparePath($path);
