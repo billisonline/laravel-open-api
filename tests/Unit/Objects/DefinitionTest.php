@@ -78,7 +78,7 @@ class DefinitionTest extends TestCase
                         'expiresAt' => 'string',
                     ]);
 
-                OpenApiPath::make()->action([UserController::class, 'authenticate']);
+                OpenApiOperation::make()->action([UserController::class, 'authenticate']);
             },
             [
                 'paths./api/users/authenticate.post.responses.200.content.application/json.schema' => [

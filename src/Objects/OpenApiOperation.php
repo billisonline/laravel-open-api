@@ -66,6 +66,20 @@ class OpenApiOperation
      */
     private $usingBearerTokenAuth = false;
 
+    /**
+     * @var bool
+     */
+    private $implicitPath = false;
+
+    /**
+     * @param Action|array|string|callable $action
+     * @return self
+     */
+    public static function fromAction($action): self
+    {
+        return static::make()->action($action);
+    }
+
     public function __construct()
     {
         $this->saveCurrentDefinition();
@@ -199,12 +213,37 @@ class OpenApiOperation
         return $this->response($status, []);
     }
 
-    public function fromAction(Action $action)
+    public function implicitPath(): self
     {
+        $this->implicitPath = true;
+
+        if ($this->inDefinitionContext()) {
+            $this->currentDefinition->addOperationWithImplicitPath($this);
+        }
+
+        return $this;
+    }
+
+    public function hasImplicitPath(): bool
+    {
+        return $this->implicitPath;
+    }
+
+    /**
+     * @param Action|array|string|callable $action
+     * @return $this
+     */
+    public function action($action): self
+    {
+        if (is_string($action) || is_array($action)) {
+            $action = Action::fromName($action);
+        }
+
         $this->action = $action;
 
         return (
             $this
+                ->implicitPath()
                 ->method($action->httpMethod())
                 ->operationId($action->operationId())
                 ->description($action->description())
@@ -320,5 +359,10 @@ class OpenApiOperation
         $this->usingBearerTokenAuth = true;
 
         return $this;
+    }
+
+    public function getImplicitPathAction(): ?Action
+    {
+        return $this->action;
     }
 }

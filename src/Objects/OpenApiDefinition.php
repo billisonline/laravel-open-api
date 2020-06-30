@@ -62,6 +62,11 @@ class OpenApiDefinition
     private $usingBearerTokenAuth = false;
 
     /**
+     * @var OpenApiOperation[]|array
+     */
+    private $operationsWithImplicitPaths;
+
+    /**
      * Create a new definition object and set it as the current definition while the given callable is run. Paths,
      * info, operations, etc. constructed inside the callable will use this object as their current definition.
      *
@@ -162,38 +167,6 @@ class OpenApiDefinition
     }
 
     /**
-     * Either find an existing path object corresponding to the given string (URI with params), or create one.
-     *
-     * @param string $path
-     * @return OpenApiPath
-     */
-    public function findOrCreatePath(string $path): OpenApiPath
-    {
-        if ($existing = $this->findPath($path)) {
-            return $existing;
-        }
-
-        return new OpenApiPath($path);
-    }
-
-    /**
-     * Find a path object corresponding to the given string (URI with params), or return null if none exists.
-     *
-     * @param string $pathToFind
-     * @return OpenApiPath|null
-     */
-    public function findPath(string $pathToFind): ?OpenApiPath
-    {
-        return (
-            collect($this->paths)
-                ->filter(function (OpenApiPath $path) use ($pathToFind) {
-                    return $path->getPath() == $pathToFind;
-                })
-                ->first()
-        );
-    }
-
-    /**
      * Set the "info" block for this definition.
      *
      * @param OpenApiInfo $info
@@ -277,6 +250,8 @@ class OpenApiDefinition
 
     public function build(): OpenApiDefinitionDto
     {
+        $this->paths = array_merge($this->paths, $this->createPathsFromOperationsWithImplicitPaths());
+
         $definitionParams = [
             'paths'                 => $this->collectPaths(),
             'info'                  => $this->info->build(),
@@ -324,8 +299,7 @@ class OpenApiDefinition
     }
 
     /**
-     * Collect and build all registered paths. Exclude path objects that were created and abandoned because an identical
-     * path was found.
+     * Collect and build all registered paths.
      *
      * @return OpenApiPathDto[]|array
      */
@@ -333,13 +307,48 @@ class OpenApiDefinition
     {
         return (
             collect($this->paths)
-                ->filter(function (OpenApiPath $path): bool {
-                    return !is_null($path->getPath());
-                })
                 ->map(function (OpenApiPath $path): OpenApiPathDto {
                     return $path->build();
                 })
                 ->all()
         );
+    }
+
+    public function addOperationWithImplicitPath(OpenApiOperation $operation)
+    {
+        if (! $operation->hasImplicitPath()) {
+            throw new \Exception;
+        }
+
+        $this->operationsWithImplicitPaths[] = $operation;
+    }
+
+    private function createPathsFromOperationsWithImplicitPaths(): array
+    {
+        $findPathByUri = function (array $paths, string $uri): ?OpenApiPath {
+            return (
+                collect($paths)
+                    ->filter(function (OpenApiPath $path) use ($uri) {
+                        return $path->getPath() == $uri;
+                    })
+                    ->first()
+            );
+        };
+
+        return collect($this->operationsWithImplicitPaths)->reduce(function (array $paths, OpenApiOperation $nextOperation) use ($findPathByUri) {
+            if (is_null($action = $nextOperation->getImplicitPathAction())) {
+                throw new \Exception; // todo: implicit paths not from actions?
+            }
+
+            if ($path = $findPathByUri($paths, $action->uri())) {
+                $path->addOperation($nextOperation);
+            } else {
+                $path = OpenApiPath::fromAction($action)->addOperation($nextOperation);
+
+                $paths[] = $path;
+            }
+
+            return $paths;
+        }, []);
     }
 }

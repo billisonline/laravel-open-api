@@ -16,12 +16,9 @@ class WholeDefinitionTest extends TestCase
         $def = OpenApiDefinition::with(function () {
             OpenApiInfo::make()->title('test')->version('1.0');
 
-            OpenApiPath::make()->path('/api/posts')->addOperation(
-                OpenApiOperation::make()->method('get')->operationId('indexPosts')
-            );
-            OpenApiPath::make()->path('/api/posts')->addOperation(
-                OpenApiOperation::make()->method('post')->operationId('storePost')
-            );
+            OpenApiPath::make()->path('/api/posts')
+                ->addOperation(OpenApiOperation::make()->method('get')->operationId('indexPosts'))
+                ->addOperation(OpenApiOperation::make()->method('post')->operationId('storePost'));
         });
 
         $this->assertEquals(

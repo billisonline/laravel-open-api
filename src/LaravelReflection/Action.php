@@ -30,9 +30,18 @@ class Action
         $this->route = $route;
     }
 
+    protected function prepareUri(string $uri): string
+    {
+        if (!Str::startsWith($uri, '/')) {
+            $uri = "/{$uri}";
+        }
+
+        return $uri;
+    }
+
     public function uri(): string
     {
-        return $this->route->uri;
+        return $this->prepareUri($this->route->uri);
     }
 
     public function httpMethod(): string

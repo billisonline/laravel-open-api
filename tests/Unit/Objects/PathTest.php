@@ -19,10 +19,11 @@ class PathTest extends TestCase
                     'description' => 'test',
                 ]
             ],
-            OpenApiPath::make()
-                ->action([PostController::class, 'index'], function (OpenApiOperation $operation) {
-                    $operation->description('test');
-                })
+            OpenApiPath::fromAction([PostController::class, 'index'])
+                ->addOperation(
+                    OpenApiOperation::fromAction([PostController::class, 'index'])
+                        ->description('test')
+                )
                 ->build()
                 ->toArray()
         );
@@ -48,6 +49,7 @@ class PathTest extends TestCase
             ],
             OpenApiPath::make()
                 ->action([PostController::class, 'show'])
+                ->addOperation(OpenApiOperation::fromAction([PostController::class, 'show']))
                 ->build()
                 ->toArray()
         );

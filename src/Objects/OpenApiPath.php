@@ -32,9 +32,9 @@ class OpenApiPath
 
     /**
      * @param Action|array|string|callable $action
-     * @return static
+     * @return self
      */
-    public static function fromAction($action)
+    public static function fromAction($action): self
     {
         return static::make()->action($action);
     }
@@ -52,23 +52,15 @@ class OpenApiPath
 
     /**
      * @param Action|array|string|callable $action
-     * @param callable|null $tapOperation
      * @return $this
      */
-    public function action($action, ?callable $tapOperation=null): self
+    public function action($action): self
     {
         if (is_array($action) || is_string($action)) {
             $action = Action::fromName($action);
         }
         
-        return (
-            $this->path($action->uri())
-                ->addOperation(
-                    OpenApiOperation::make()
-                        ->fromAction($action)
-                        ->tap($tapOperation ?: function () {})
-                )
-        );
+        return $this->path($action->uri());
     }
 
     public function get()
@@ -87,10 +79,6 @@ class OpenApiPath
 
     public function path(string $path): self
     {
-        if ($this->inDefinitionContext()) {
-            return $this->currentDefinition->findOrCreatePath($this->preparePath($path));
-        }
-
         $this->path = $this->preparePath($path);
 
         return $this;
