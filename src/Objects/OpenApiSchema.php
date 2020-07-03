@@ -102,6 +102,8 @@ class OpenApiSchema implements ComponentizableInterface
 
         $this->type('object');
 
+        $this->description($resource->description());
+
         foreach ($resource->properties() as $property) {
             if ($property->type() == 'json_resource') {continue;} //todo: refs
 

@@ -117,7 +117,7 @@ class JsonResource
             throw new \Exception($accessor);
         }
 
-        $description = $model->getDescription($accessor);
+        $description = $model->getPropertyDescription($accessor);
 
         return new JsonResourceProperty($name, $type, $isConditional, $description);
     }
@@ -208,5 +208,10 @@ class JsonResource
     public function componentTitle(): string
     {
         return preg_replace('/Resource$/', '', class_basename($this->resourceClass));
+    }
+
+    public function description(): string
+    {
+        return $this->model()->getClassDescription();
     }
 }

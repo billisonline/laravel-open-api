@@ -61,7 +61,16 @@ class Model
         return $this->model;
     }
 
-    public function getDescription(string $accessor): string
+    public function getClassDescription(): string
+    {
+        $class = new \ReflectionClass($this->model);
+
+        $docBlockFactory = DocBlockFactory::createInstance();
+
+        return $docBlockFactory->create($class->getDocComment() ?: '/**  */')->getSummary();
+    }
+
+    public function getPropertyDescription(string $name): string
     {
         $class = new \ReflectionClass($this->model);
 
@@ -72,13 +81,13 @@ class Model
         return (
             collect($docBlock->getTags())
                 ->whereInstanceOf(Property::class)
-                ->filter(function (Property $property) use ($accessor): bool {
-                    $pattern = '/\s*'.preg_quote($accessor).'\s*(.*)/';
+                ->filter(function (Property $property) use ($name): bool {
+                    $pattern = '/\s*'.preg_quote($name).'\s*(.*)/';
 
                     return Regex::match($pattern, $property->getDescription()->getBodyTemplate())->hasMatch();
                 })
-                ->map(function (Property $property) use ($accessor): string {
-                    $pattern = '/\s*'.preg_quote($accessor).'\s*(.*)/';
+                ->map(function (Property $property) use ($name): string {
+                    $pattern = '/\s*'.preg_quote($name).'\s*(.*)/';
 
                     return Regex::match($pattern, $property->getDescription()->getBodyTemplate())->groupOr(1, '');
                 })
