@@ -41,7 +41,7 @@
     "extra": {
         "laravel": {
             "providers": [
-              "OpenApiServiceProviderDto"
+              "OpenApiServiceProvider"
             ],
             "aliases": [
 

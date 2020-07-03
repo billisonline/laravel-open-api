@@ -3,12 +3,12 @@
 namespace BYanelli\OpenApiLaravel\Tests\Feature;
 
 use BYanelli\OpenApiLaravel\Tests\TestCase;
-use BYanelli\OpenApiLaravel\OpenApiServiceProvider;
+use Illuminate\Routing\Router;
 
 class ServiceProviderTest extends TestCase
 {
     public function testServiceProviderWasRun()
     {
-        $this->assertEquals($this->app->make('foo'), 'bar');
+        $this->assertTrue(Router::hasMacro('getRouteByAction'));
     }
 }
