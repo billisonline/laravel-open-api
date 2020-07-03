@@ -32,6 +32,11 @@ class OpenApiParameter
      */
     private $schema;
 
+    /**
+     * @var bool
+     */
+    private $required = false;
+
     public function name(string $name)
     {
         $this->name = $name;
@@ -67,6 +72,7 @@ class OpenApiParameter
             'in'            => $this->in,
             'schema'        => optional($this->schema)->build(),
             'description'   => $this->description,
+            'required'      => $this->required,
         ]);
     }
 
@@ -79,6 +85,8 @@ class OpenApiParameter
         if (!is_null($model = $parameter->boundModel())) {
             $this->description($this->getDescriptionFromModel($model, $parameter->action()));
         }
+
+        $this->required = true;
 
         return $this;
     }

@@ -40,7 +40,7 @@ class PathTest extends TestCase
                         [
                             'name' => 'post',
                             'in' => 'path',
-                            'required' => false, //todo
+                            'required' => true,
                             'description' => 'Id of the Post to show'
                         ]
                     ],

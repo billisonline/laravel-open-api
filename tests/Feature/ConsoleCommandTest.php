@@ -65,7 +65,7 @@ class ConsoleCommandTest extends TestCase
                                         'name' => 'post',
                                         'in' => 'path',
                                         'description' => 'Id of the Post to show',
-                                        'required' => false,
+                                        'required' => true,
                                     ]
                                 ],
                                 'tags' => ['Post'],
