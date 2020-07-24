@@ -2,7 +2,6 @@
 
 namespace BYanelli\OpenApiLaravel\LaravelReflection;
 
-use BYanelli\OpenApiLaravel\Objects\OpenApiSchema;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource as BaseJsonResource;
 use Spatie\Regex\Regex;
@@ -171,28 +170,6 @@ class JsonResource
         }
 
         return $type;
-    }
-
-    public function schema(): OpenApiSchema
-    {
-        if ($schema = $this->definedProperties->getSchema()) {
-            return $schema;
-        }
-
-        return OpenApiSchema::make()->tap(function (OpenApiSchema $schema) {
-            $schema->type('object');
-
-            foreach ($this->properties() as $property) {
-                if ($property->type() == 'json_resource') {continue;} //todo: refs
-
-                $schema->addProperty(
-                    OpenApiSchema::make()
-                        ->name($property->name())
-                        ->type($property->type())
-                        ->nullable($property->isConditional())
-                );
-            }
-        });
     }
 
     public function definedProperties(): JsonResourceProperties

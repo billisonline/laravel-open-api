@@ -108,9 +108,19 @@ class ConsoleCommandTest extends TestCase
                                         'type' => 'string',
                                         'description' => 'The URL slug for the post\'s headline',
                                     ],
+                                    'author' => [
+                                        '$ref' => '#/components/schemas/User',
+                                    ],
                                 ],
                                 'description' => 'A blog post.',
-                            ]
+                            ],
+                            'User' => [
+                                'title' => 'User',
+                                'type' => 'object',
+                                'properties' => [
+                                    'id' => ['type' => 'integer'],
+                                ],
+                            ],
                         ],
                         'securitySchemes' => [
                             'BearerAuth' => [

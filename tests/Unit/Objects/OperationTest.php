@@ -119,6 +119,12 @@ class OperationTest extends TestCase
                                             'type' => 'string',
                                             'description' => 'The URL slug for the post\'s headline',
                                         ],
+                                        'author' => [
+                                            'type' => 'object',
+                                            'properties' => [
+                                                'id' => ['type' => 'integer'],
+                                            ],
+                                        ],
                                     ],
                                     'description' => 'A blog post.',
                                 ]
@@ -158,6 +164,12 @@ class OperationTest extends TestCase
                                             'headlineSlug' => [
                                                 'type' => 'string',
                                                 'description' => 'The URL slug for the post\'s headline',
+                                            ],
+                                            'author' => [
+                                                'type' => 'object',
+                                                'properties' => [
+                                                    'id' => ['type' => 'integer'],
+                                                ],
                                             ],
                                         ],
                                         'description' => 'A blog post.',
