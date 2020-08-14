@@ -4,10 +4,8 @@ namespace BYanelli\OpenApiLaravel\Tests\Unit\Objects;
 
 use BYanelli\OpenApiLaravel\Objects\OpenApiOperation;
 use BYanelli\OpenApiLaravel\Objects\OpenApiResponse;
-use BYanelli\OpenApiLaravel\Objects\OpenApiSchema;
 use BYanelli\OpenApiLaravel\Tests\TestCase;
 use TestApp\Http\Resources\Post as PostResource;
-use TestApp\Post;
 
 class OperationTest extends TestCase
 {
@@ -123,6 +121,27 @@ class OperationTest extends TestCase
                                             'type' => 'object',
                                             'properties' => [
                                                 'id' => ['type' => 'integer'],
+                                                'posts' => [
+                                                    'type' => 'array',
+                                                    'items' => [
+                                                        'type' => 'object',
+                                                        'properties' => [
+                                                            'id' => ['type' => 'integer'],
+                                                            'body' => [
+                                                                'type' => 'string',
+                                                                'nullable' => true,
+                                                            ],
+                                                            'headlineSlug' => [
+                                                                'type' => 'string',
+                                                                'description' => 'The URL slug for the post\'s headline',
+                                                            ],
+                                                            'author' => [
+                                                                '$ref' => '#/components/schemas/whatever', //todo
+                                                            ],
+                                                        ],
+                                                        'description' => 'A blog post.'
+                                                    ]
+                                                ],
                                             ],
                                         ],
                                     ],
@@ -169,6 +188,27 @@ class OperationTest extends TestCase
                                                 'type' => 'object',
                                                 'properties' => [
                                                     'id' => ['type' => 'integer'],
+                                                    'posts' => [
+                                                        'type' => 'array',
+                                                        'items' => [
+                                                            'type' => 'object',
+                                                            'properties' => [
+                                                                'id' => ['type' => 'integer'],
+                                                                'body' => [
+                                                                    'type' => 'string',
+                                                                    'nullable' => true,
+                                                                ],
+                                                                'headlineSlug' => [
+                                                                    'type' => 'string',
+                                                                    'description' => 'The URL slug for the post\'s headline',
+                                                                ],
+                                                                'author' => [
+                                                                    '$ref' => '#/components/schemas/whatever', //todo
+                                                                ],
+                                                            ],
+                                                            'description' => 'A blog post.'
+                                                        ]
+                                                    ],
                                                 ],
                                             ],
                                         ],

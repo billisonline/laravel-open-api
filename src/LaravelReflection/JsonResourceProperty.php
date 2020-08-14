@@ -23,13 +23,29 @@ class JsonResourceProperty
      * @var string|null
      */
     private $resourceType;
+
     /**
      * @var string
      */
     private $description;
+    /**
+     * @var string
+     */
+    private $itemType;
+    /**
+     * @var string
+     */
+    private $itemResourceType;
 
-    public function __construct(string $name, string $type, bool $isConditional, string $description='', ?string $resourceType = null)
-    {
+    public function __construct(
+        string $name,
+        string $type,
+        bool $isConditional,
+        string $description = '',
+        ?string $resourceType = null,
+        string $itemType = '',
+        string $itemResourceType = ''
+    ) {
         $this->validateType($type);
 
         $this->name = $name;
@@ -37,11 +53,13 @@ class JsonResourceProperty
         $this->isConditional = $isConditional;
         $this->resourceType = $resourceType;
         $this->description = $description;
+        $this->itemType = $itemType;
+        $this->itemResourceType = $itemResourceType;
     }
 
     private function validateType(string $type): void
     {
-        if (!in_array($type, ['string', 'integer', 'boolean', 'json_resource', 'json_resource_array'])) {
+        if (!in_array($type, ['string', 'integer', 'boolean', 'json_resource', 'array'])) {
             throw new \Exception($type);
         }
     }
@@ -54,6 +72,11 @@ class JsonResourceProperty
     public function resourceType(): ?string
     {
         return $this->resourceType;
+    }
+
+    public function itemResourceType(): ?string
+    {
+        return $this->itemResourceType;
     }
 
     public function type(): string
@@ -69,5 +92,15 @@ class JsonResourceProperty
     public function description(): string
     {
         return $this->description;
+    }
+
+    public function isJsonResource(): bool
+    {
+        return $this->type == 'json_resource';
+    }
+
+    public function isJsonResourceArray(): bool
+    {
+        return $this->type == 'array' && $this->itemType == 'json_resource' && !empty($this->itemResourceType);
     }
 }

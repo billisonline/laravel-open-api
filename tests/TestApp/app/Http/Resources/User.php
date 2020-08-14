@@ -10,6 +10,7 @@ class User extends JsonResource
     {
         return [
             'id' => $this->id,
+            'posts' => $this->posts->mapInto(Post::class),
         ];
     }
 }

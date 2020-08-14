@@ -20,7 +20,7 @@ class OpenApiSchema implements ComponentizableInterface
     /**
      * @var string
      */
-    private $type;
+    protected $type;
 
     /**
      * @var OpenApiSchema
@@ -40,7 +40,7 @@ class OpenApiSchema implements ComponentizableInterface
     /**
      * @var string
      */
-    private $name = '';
+    protected $name = '';
 
     /**
      * @var string
@@ -94,7 +94,7 @@ class OpenApiSchema implements ComponentizableInterface
         return (new static)->object($array);
     }
 
-    public function fromResource(JsonResource $resource): self
+    public function fromResource(JsonResource $resource, array $resourceTypesVisited=[]): self
     {
         if ($schema = $resource->definedProperties()->getSchema()) {
             return $schema->componentKey($resource->componentKey())->componentTitle($resource->componentTitle());
@@ -105,12 +105,56 @@ class OpenApiSchema implements ComponentizableInterface
         $this->description($resource->description());
 
         foreach ($resource->properties() as $property) {
-            if ($property->type() == 'json_resource') {
-                $this->addProperty(
-                    OpenApiSchema::make()
-                        ->name($property->name())
-                        ->fromResource(new JsonResource($property->resourceType()))
-                );
+            if ($property->isJsonResourceArray()) {
+                $itemResourceType = $property->itemResourceType();
+
+                if (in_array($itemResourceType, $resourceTypesVisited)) {
+                    $this->addProperty(
+                        OpenApiSchema::make()
+                            ->name($property->name())
+                            ->type('array')
+                            ->items(
+                                OpenApiSchemaLazyResourceRef::make()
+                                    ->fromResource(new JsonResource($itemResourceType))
+                            )
+                    );
+                } else {
+                    $this->addProperty(
+                        OpenApiSchema::make()
+                            ->name($property->name())
+                            ->type('array')
+                            ->items(
+                                OpenApiSchema::make()
+                                    ->fromResource(
+                                        new JsonResource($itemResourceType),
+                                        array_merge($resourceTypesVisited, [$itemResourceType])
+                                    )
+                            )
+                    );
+                }
+
+                continue;
+            }
+
+            if ($property->isJsonResource()) {
+                $resourceType = $property->resourceType();
+
+                if (in_array($resourceType, $resourceTypesVisited)) {
+                    $this->addProperty(
+                        OpenApiSchemaLazyResourceRef::make()
+                            ->name($property->name())
+                            ->fromResource(new JsonResource($property->resourceType()))
+                    );
+                } else {
+                    $this->addProperty(
+                        OpenApiSchema::make()
+                            ->name($property->name())
+                            ->fromResource(
+                                new JsonResource($property->resourceType()),
+                                array_merge($resourceTypesVisited, [$resourceType])
+                            )
+                    );
+                }
 
                 continue;
             }

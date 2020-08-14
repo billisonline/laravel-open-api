@@ -7,7 +7,7 @@ trait InteractsWithCurrentDefinition
     /**
      * @var OpenApiDefinition|null
      */
-    private $currentDefinition;
+    protected $currentDefinition;
 
     protected function saveCurrentDefinition(): void
     {

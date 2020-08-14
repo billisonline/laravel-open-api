@@ -90,11 +90,26 @@ class JsonResource
             return $this->convertJsonResourceToProperty($rawProperty, $name);
         }
 
+        if (($rawProperty instanceof JsonResourcePropertySpy) && $rawProperty->isResourceArray()) {
+            return $this->convertJsonResourceArrayToProperty($rawProperty);
+        }
+
         if ($rawProperty instanceof JsonResourcePropertySpy) {
             return $this->convertSpyToProperty($rawProperty, $name);
         }
 
         throw new \Exception;
+    }
+
+    private function convertJsonResourceArrayToProperty(JsonResourcePropertySpy $propertySpy): JsonResourceProperty
+    {
+        $accessor = $propertySpy->accessor();
+        $isConditional = $propertySpy->isConditional();
+        $resourceType = $propertySpy->resourceArrayItemType();
+
+        // todo: description?
+
+        return new JsonResourceProperty($accessor, 'array', $isConditional, '', null, 'json_resource', $resourceType);
     }
 
     private function convertSpyToProperty(JsonResourcePropertySpy $propertySpy, string $name): JsonResourceProperty

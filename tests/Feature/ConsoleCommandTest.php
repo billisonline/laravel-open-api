@@ -119,6 +119,12 @@ class ConsoleCommandTest extends TestCase
                                 'type' => 'object',
                                 'properties' => [
                                     'id' => ['type' => 'integer'],
+                                    'posts' => [
+                                        'type' => 'array',
+                                        'items' => [
+                                            '$ref' => '#/components/schemas/Post',
+                                        ],
+                                    ],
                                 ],
                             ],
                         ],

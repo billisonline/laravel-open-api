@@ -3,6 +3,7 @@
 namespace BYanelli\OpenApiLaravel\LaravelReflection;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Arr;
 
 class JsonResourcePropertySpy
 {
@@ -16,6 +17,11 @@ class JsonResourcePropertySpy
      */
     private $isConditional = false;
 
+    /**
+     * @var string|null
+     */
+    private $resourceArrayItemType = null;
+
     public function __construct(string $accessor)
     {
         $this->accessors[] = $accessor;
@@ -28,29 +34,36 @@ class JsonResourcePropertySpy
 
     public function __call($name, $arguments)
     {
-        return $this; //todo
+        if ($this->isMapIntoResourceCall($name, $arguments)) {
+            $this->resourceArrayItemType = Arr::first($arguments);
+        }
+
+        return $this;
     }
 
-    /*public function __call($name, $arguments)
+    private function isMapIntoResourceCall($name, $arguments): bool
     {
-        if (
+        return (
             ($name == 'mapInto')
             && (!is_null($firstArg = Arr::first($arguments)))
             && ($this->isJsonResource($firstArg))
-        ) {
-            $this->resourceArrayType = $firstArg;
-        }
+        );
+    }
+
+    protected function isJsonResource(string $class): bool
+    {
+        return class_exists($class) && is_subclass_of($class, JsonResource::class);
     }
 
     public function isResourceArray(): bool
     {
-        return !is_null($this->resourceArrayType);
+        return !is_null($this->resourceArrayItemType);
     }
 
-    protected function isJsonResource($firstArg): bool
+    public function resourceArrayItemType(): string
     {
-        return class_exists($firstArg) && is_subclass_of($firstArg, JsonResource::class);
-    }*/
+        return $this->resourceArrayItemType;
+    }
 
     public function setIsConditional(bool $isConditional): self
     {
