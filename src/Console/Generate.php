@@ -43,7 +43,15 @@ class Generate extends \Illuminate\Console\Command
 
     public function generate(string $generator, string $specPath, string $output): array
     {
-        $generatorCommand = new Command('openapi-generator generate');
+        if ($jarPath = env('OPENAPI_GENERATOR_JAR_PATH')) {
+            $javaHome = $this->getJavaHome();
+            $generatorCommand = new Command("java -jar {$jarPath}");
+
+            $generatorCommand->procEnv['JAVA_HOME'] = $javaHome;
+            $generatorCommand->procEnv['PATH'] = env('PATH').':'.$javaHome;
+        } else {
+            $generatorCommand = new Command('openapi-generator generate');
+        }
 
         $generatorCommand
             ->addArg('--generator-name=', $generator)
@@ -59,8 +67,15 @@ class Generate extends \Illuminate\Console\Command
 
     private function openApiGeneratorCommandExists()
     {
-        $generatorTest = new Command('openapi-generator help');
+        return (new Command('which openapi-generator'))->execute();
+    }
 
-        return $generatorTest->execute();
+    public function getJavaHome(): string
+    {
+        $command = new Command('/usr/libexec/java_home');
+
+        $command->execute();
+
+        return $command->getOutput();
     }
 }
