@@ -8,7 +8,9 @@ use mikehaertl\shellcommand\Command as ShellCommand;
 
 class Serve extends Command
 {
-    protected $signature = 'openapi:serve {--definition=main} {--generator=html2} {--port=9000}';
+    const DEFAULT_GENERATOR = 'redoc';
+
+    protected $signature = 'openapi:serve {--definition=main} {--generator='.self::DEFAULT_GENERATOR.'} {--port=9000}';
 
     public function handle()
     {
