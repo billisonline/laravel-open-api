@@ -41,7 +41,8 @@ class PathTest extends TestCase
                             'name' => 'post',
                             'in' => 'path',
                             'required' => true,
-                            'description' => 'Id of the Post to show'
+                            'description' => 'Id of the Post to show',
+                            'schema' => ['type' => 'string'],
                         ]
                     ],
                     'description' => 'Show post',

@@ -66,6 +66,7 @@ class ConsoleCommandTest extends TestCase
                                         'in' => 'path',
                                         'description' => 'Id of the Post to show',
                                         'required' => true,
+                                        'schema' => ['type' => 'string']
                                     ]
                                 ],
                                 'tags' => ['Post'],

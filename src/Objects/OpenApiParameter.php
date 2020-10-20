@@ -86,6 +86,8 @@ class OpenApiParameter
             $this->description($this->getDescriptionFromModel($model, $parameter->action()));
         }
 
+        $this->schema = OpenApiSchema::make()->type('string');
+
         $this->required = true;
 
         return $this;
