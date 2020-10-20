@@ -69,11 +69,21 @@ class Generate extends \Illuminate\Console\Command
         return $specPath;
     }
 
+    private function jarPathOverride(): string
+    {
+        return env('OPENAPI_GENERATOR_JAR_PATH', '');
+    }
+
+    private function hasJarPathOverride(): bool
+    {
+        return !empty($this->jarPathOverride());
+    }
+
     public function generateWithOpenApiGenerator(string $generator, string $specPath, string $output): array
     {
-        if ($jarPath = env('OPENAPI_GENERATOR_JAR_PATH')) {
+        if ($this->hasJarPathOverride()) {
             $javaHome = $this->getJavaHome();
-            $generatorCommand = new Command("java -jar {$jarPath}");
+            $generatorCommand = new Command("java -jar {$this->jarPathOverride()} generate");
 
             $generatorCommand->procEnv['JAVA_HOME'] = $javaHome;
             $generatorCommand->procEnv['PATH'] = env('PATH').':'.$javaHome;
@@ -95,6 +105,10 @@ class Generate extends \Illuminate\Console\Command
 
     private function openApiGeneratorCommandExists(): bool
     {
+        if ($this->hasJarPathOverride()) {
+            return file_exists($this->jarPathOverride());
+        }
+
         return (new Command('which openapi-generator'))->execute();
     }
 
