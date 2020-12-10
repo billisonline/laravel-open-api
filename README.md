@@ -1,8 +1,10 @@
-# Laravel OpenAPI Generator
+# Laravel OpenAPI Definition Builder
 
-![](https://travis-ci.org/billisonline/laravel-open-api.svg?branch=master)
+This library helps you build an OpenAPI definition by intelligently guessing information about your app's routes, controllers, and more.
 
-This library automatically generates an OpenAPI definition based on your app's routes, controllers, and more.
+## Demo app
+
+To see a demonstration of this library in action, check out the [Laravel OpenAPI blog](https://github.com/billisonline/open-api-blog) app, featuring a Laravel backend connected to a Typescript/React frontend via an auto-generated client library.
 
 ## Getting started
 
